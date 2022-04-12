@@ -270,7 +270,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
+                        <!--<executions>
                             <execution>
                                 <configuration>
                                     <executable>python3</executable>
@@ -289,7 +289,7 @@
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
-                            </execution>
+                            </execution> -->
                         </executions>
                     </plugin>
                     <plugin>
