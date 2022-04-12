@@ -255,9 +255,8 @@ def exec_storm_class(klass, storm_config_opts, jvmtype="-server", jvmopts=[],
     elif is_windows():
         # handling whitespaces in JAVA_CMD
         try:
-            process = subprocess.Popen(all_args, stderr=sys.stderr, stdout=sys.stdout)
-            process.wait()
-            sys.exit(process.returncode)
+            ret = subprocess.check_output(all_args, stderr=subprocess.STDOUT)
+            print(ret)
         except subprocess.CalledProcessError as e:
             print(e.output)
             sys.exit(e.returncode)

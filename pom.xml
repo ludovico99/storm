@@ -26,7 +26,7 @@
 
     <groupId>org.apache.storm</groupId>
     <artifactId>storm</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>2.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Storm</name>
     <description>Distributed and fault-tolerant realtime computation</description>
@@ -44,14 +44,14 @@
             <subscribe>user-subscribe@storm.apache.org</subscribe>
             <unsubscribe>user-unsubscribe@storm.apache.org</unsubscribe>
             <post>user@storm.apache.org</post>
-            <archive>https://mail-archives.apache.org/mod_mbox/storm-user/</archive>
+            <archive>http://mail-archives.apache.org/mod_mbox/storm-user/</archive>
         </mailingList>
         <mailingList>
             <name>Storm developer mailing list</name>
             <subscribe>dev-subscribe@storm.apache.org</subscribe>
             <unsubscribe>dev-unsubscribe@storm.apache.org</unsubscribe>
             <post>dev@storm.apache.org</post>
-            <archive>https://mail-archives.apache.org/mod_mbox/storm-dev/</archive>
+            <archive>http://mail-archives.apache.org/mod_mbox/storm-dev/</archive>
         </mailingList>
     </mailingLists>
 
@@ -335,11 +335,10 @@
         <solr.version>5.2.1</solr.version>
         <jpmml.version>1.0.22</jpmml.version>
         <jedis.version>2.9.0</jedis.version>
-        <activemq.version>5.15.15</activemq.version>
+        <activemq.version>5.15.8</activemq.version>
         <rocketmq.version>4.2.0</rocketmq.version>
 
-        <jackson.version>2.10.5</jackson.version>
-        <jackson.databind.version>2.10.5.1</jackson.databind.version>
+        <jackson.version>2.10.0</jackson.version>
         
         <storm.kafka.client.version>0.11.0.3</storm.kafka.client.version>
 
@@ -1524,11 +1523,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.4</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.2.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1746,18 +1746,19 @@ public class UIHelpers {
     }
 
     /**
-     * Sanitizes streamName for use as an identifier in the visualization.  Replaces all characters except A-Z, a-z,
-     * '.', '-', and '_' with '_'.  If streamName does not start with A-Z or a-z, adds '_s' prefix.
-     * @param streamName non-null streamName
-     * @return sanitized stream name
+     * sanitizeStreamName.
+     * @param streamName streamName
+     * @return sanitizeStreamName
      */
     public static String sanitizeStreamName(String streamName) {
-        Matcher problemCharacterMatcher = Pattern.compile("(?![A-Za-z_\\-\\.]).").matcher(streamName);
-        if (streamName.length() > 0 && Character.isLetter(streamName.charAt(0))) {
-            return problemCharacterMatcher.replaceAll("_");
-        } else {
-            return "_s" + problemCharacterMatcher.replaceAll("_");
+        Pattern pattern = Pattern.compile("(?![A-Za-z_\\-:\\.]).");
+        Pattern pattern2 = Pattern.compile("^[A-Za-z]");
+        Matcher matcher = pattern2.matcher(streamName);
+        Matcher matcher2 = pattern.matcher("\\s" + streamName);
+        if (matcher.find()) {
+            matcher2 = pattern.matcher(streamName);
         }
+        return matcher2.replaceAll("_");
     }
 
     /**

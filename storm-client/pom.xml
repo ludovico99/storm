@@ -22,7 +22,7 @@
     <parent>
         <artifactId>storm</artifactId>
         <groupId>org.apache.storm</groupId>
-        <version>2.5.0-SNAPSHOT</version>
+        <version>2.4.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -84,7 +84,7 @@
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
         </dependency>
-        
+
         <!-- kryo -->
         <dependency>
             <groupId>com.esotericsoftware</groupId>
@@ -271,25 +271,25 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <executions>
-                           <!-- <execution>
-                                <configuration>
-                                    <executable>python3</executable>
-                                    <workingDirectory>test/py</workingDirectory>
-                                    <arguments>
-                                        <argument>test_storm_cli.py</argument>
-                                    </arguments>
-                                    <environmentVariables>
-                                        <PYTHONPATH>../../../bin:$PYTHONPATH</PYTHONPATH>
-                                        <PYTHONDONTWRITEBYTECODE>true</PYTHONDONTWRITEBYTECODE>
-                                    </environmentVariables>
-                                    <skip>${skipTests}</skip>
-                                </configuration>
-                                <id>python3-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                            </execution> -->
+                            <!-- <execution> -->
+                            <!--     <configuration> -->
+                            <!--         <executable>python3</executable> -->
+                            <!--         <workingDirectory>test/py</workingDirectory> -->
+                            <!--         <arguments> -->
+                            <!--             <argument>test_storm_cli.py</argument> -->
+                            <!--         </arguments> -->
+                            <!--         <environmentVariables> -->
+                            <!--             <PYTHONPATH>../../../bin:$PYTHONPATH</PYTHONPATH> -->
+                            <!--             <PYTHONDONTWRITEBYTECODE>true</PYTHONDONTWRITEBYTECODE> -->
+                            <!--         </environmentVariables> -->
+                            <!--         <skip>${skipTests}</skip> -->
+                            <!--     </configuration> -->
+                            <!--     <id>python3-test</id> -->
+                            <!--     <phase>test</phase> -->
+                            <!--     <goals> -->
+                            <!--         <goal>exec</goal> -->
+                            <!--     </goals> -->
+                            <!-- </execution> -->
                         </executions>
                     </plugin>
                     <plugin>
