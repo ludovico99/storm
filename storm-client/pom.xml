@@ -270,8 +270,8 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <!--<executions>
-                            <execution>
+                        <executions>
+                           <!-- <execution>
                                 <configuration>
                                     <executable>python3</executable>
                                     <workingDirectory>test/py</workingDirectory>
