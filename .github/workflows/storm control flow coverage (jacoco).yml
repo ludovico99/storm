@@ -47,7 +47,7 @@ jobs:
       - name: Configure NodeJS
         uses: actions/setup-node@v3
         with:
-          node-version: 8.9.3
+          node-version: 14.19.3
 
       - name: Configure Python (v. 3.x)
         uses: actions/setup-python@v3
