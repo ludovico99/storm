@@ -278,13 +278,13 @@
                                         <argument>report</argument>
                                         <argument>-input</argument>
                                         <argument>./target/badua.ser</argument>
-										<argument>-classes</argument>
-										<argument>${project.build.outputDirectory}</argument>
-										<argument>-show-classes</argument>
-										<argument>-show-methods</argument>
-										<argument>-xml</argument>
-										<argument>${project.build.directory}/badua.xml</argument>
-									</arguments>
+					<argument>-classes</argument>
+					<argument>${project.build.outputDirectory}</argument>
+					<argument>-show-classes</argument>
+					<argument>-show-methods</argument>
+					<argument>-xml</argument>
+					<argument>${project.build.directory}/badua.xml</argument>
+				   </arguments>
                 </configuration>
               </execution>
             </executions>
