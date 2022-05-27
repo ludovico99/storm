@@ -17,18 +17,48 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
       - name: Cache Maven packages
         uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      
+      - name: Setup Java & Maven
+        uses: s4u/setup-maven-action@v1.3.1
+        with:
+          java-version: 11
+          java-distribution: 'temurin'
+          maven-version: 3.6.3
+
+      - name: Configure Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.4.2
+
+      - name: Configure NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 8.9.3
+
+      - name: Configure Python (v. 3.x)
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install libssl-dev
+        run: sudo apt-get install -y libssl-dev
+
+      - name: Install Mock Library with pip
+        run: pip install mock
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
