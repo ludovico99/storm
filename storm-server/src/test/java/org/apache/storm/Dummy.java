@@ -5,6 +5,7 @@ import org.junit.Test;
 
 public class Dummy {
 
+
     @Test
     public void dummyMethod (){
         Assert.assertTrue(true);
