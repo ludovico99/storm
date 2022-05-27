@@ -26,8 +26,7 @@ jobs:
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m
-		  
+          restore-keys: ${{ runner.os }}-m	  
 
       - name: Setup Java & Maven
         uses: s4u/setup-maven-action@v1.3.1
