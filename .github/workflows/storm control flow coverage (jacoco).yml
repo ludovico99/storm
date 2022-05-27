@@ -59,6 +59,7 @@ jobs:
 
       - name: Install Mock Library with pip
         run: pip install mock
+        
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
