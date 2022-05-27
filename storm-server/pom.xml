@@ -222,7 +222,7 @@
     </build>
 	
 	
-	</profiles>
+	<profiles>
 	 <profile>
   
 	<!-- profilo per eseguire l'analisi con ba-dua nel sottomodulo bookkeeper server -->
