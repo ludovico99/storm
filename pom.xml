@@ -38,233 +38,7 @@
         </license>
     </licenses>
 
-    <mailingLists>
-        <mailingList>
-            <name>Storm user mailing list</name>
-            <subscribe>user-subscribe@storm.apache.org</subscribe>
-            <unsubscribe>user-unsubscribe@storm.apache.org</unsubscribe>
-            <post>user@storm.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/storm-user/</archive>
-        </mailingList>
-        <mailingList>
-            <name>Storm developer mailing list</name>
-            <subscribe>dev-subscribe@storm.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@storm.apache.org</unsubscribe>
-            <post>dev@storm.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/storm-dev/</archive>
-        </mailingList>
-    </mailingLists>
-
-    <developers>
-        <developer>
-            <id>nathanmarz</id>
-            <name>Nathan Marz</name>
-            <email>nathan@nathanmarz.com</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-8</timezone>
-        </developer>
-        <developer>
-            <id>ptgoetz</id>
-            <name>P. Taylor Goetz</name>
-            <email>ptgoetz@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-5</timezone>
-        </developer>
-        <developer>
-            <id>xumingming</id>
-            <name>James Xu</name>
-            <email>xumingming@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone />
-        </developer>
-        <developer>
-            <id>afeng</id>
-            <name>Andy Feng</name>
-            <email>afeng@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-8</timezone>
-        </developer>
-        <developer>
-            <id>davidlao</id>
-            <name>David Lao</name>
-            <email>davidlao@microsoft.com</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-8</timezone>
-        </developer>
-        <developer>
-            <id>mrflip</id>
-            <name>Flip Kromer</name>
-            <email>mrflip@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone />
-        </developer>
-        <developer>
-            <id>jjackson</id>
-            <name>Jason Jackson</name>
-            <email>jasonjckn@gmail.com</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-8</timezone>
-        </developer>
-        <developer>
-            <id>bobby</id>
-            <name>Robert Evans</name>
-            <email>evans@yahoo-inc.com</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>dagit</id>
-            <name>Derek Dagit</name>
-            <email>derekd@yahoo-inc.com</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>miguno</id>
-            <name>Michael G. Noll</name>
-            <email>michael@michael-noll.com</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>+1</timezone>
-        </developer>
-        <developer>
-            <id>dossett</id>
-            <name>Aaron Dossett</name>
-            <email>dossett@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>jerrypeng</id>
-            <name>Boyang Jerry Peng</name>
-            <email>jerrypeng@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>longda</id>
-            <name>Longda Feng</name>
-            <email>longda@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-        <developer>
-            <id>abhishek</id>
-            <name>Abhishek Agarwal</name>
-            <email>abhishek@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>+5.5</timezone>
-        </developer>
-        <developer>
-            <id>satishd</id>
-            <name>Satish Duggana</name>
-            <email>satishd@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>+5.5</timezone>
-        </developer>
-        <developer>
-            <id>vesense</id>
-            <name>Xin Wang</name>
-            <email>xinwang@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-        <developer>
-            <id>hmclouro</id>
-            <name>Hugo da Cruz Louro</name>
-            <email>hmclouro@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-8</timezone>
-        </developer>
-        <developer>
-            <id>roshannaik</id>
-            <name>Roshan Naik</name>
-            <email>roshannaik@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-8</timezone>
-        </developer>
-        <developer>
-            <id>Ethanlm</id>
-            <name>Ethan Li</name>
-            <email>ethanli@apache.org</email>
-            <roles>	
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>govind-menon</id>
-            <name>Govind Menon</name>
-            <email>govind@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>agresch</id>
-            <name>Aaron Gresch</name>
-            <email>agresch@gmail.com</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>ruili</id>
-            <name>Rui Li</name>
-            <email>ruili@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-        <developer>
-            <id>bipinprasad</id>
-            <name>Bipin Prasad</name>
-            <email>bipinprasad@apache.org</email>
-            <roles>
-                <role>Committer</role>
-            </roles>
-            <timezone>-6</timezone>
-        </developer>
-
-    </developers>
+    
 
     <scm>
         <connection>scm:git:https://gitbox.apache.org/repos/asf/storm.git</connection>
@@ -337,6 +111,7 @@
         <jedis.version>2.9.0</jedis.version>
         <activemq.version>5.15.8</activemq.version>
         <rocketmq.version>4.2.0</rocketmq.version>
+		<jacoco-maven-plugin.version>0.8.0</jacoco-maven-plugin.version>
 
         <jackson.version>2.10.0</jackson.version>
         
@@ -364,6 +139,11 @@
 
         <!-- see intellij profile below... This fixes an annoyance with intellij -->
         <provided.scope>provided</provided.scope>
+		
+		<sonar.organization>ludovico99</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/storm-aggregate-coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+
     </properties>
 
     <modules>
@@ -381,6 +161,7 @@
         <module>storm-clojure</module>
         <module>storm-clojure-test</module>
         <module>storm-submit-tools</module>
+		<module>storm-aggregate-coverage</module>
     </modules>
 
     <dependencies>
@@ -399,6 +180,33 @@
     </dependencies>
 
     <profiles>
+	
+	<!-- profilo per jacoco -->
+	
+	<profile>
+      <id>jacocoCoverageProfile</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+	
+	
         <!--
             Hack to make intellij behave.
             If you use intellij, enable this profile in your IDE.
@@ -525,6 +333,7 @@
                 </plugins>
             </build>
         </profile>
+		
         <profile>
             <id>sign</id>
             <build>
