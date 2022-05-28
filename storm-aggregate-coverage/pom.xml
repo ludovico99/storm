@@ -14,11 +14,17 @@
             <artifactId>storm-client</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+		
+		 <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-server</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
     <artifactId>storm-aggr-coverage</artifactId>
 
-    <name>Storm-aggregate-coverage (jacoco-sonar)</name>
+    <name>Apache BookKeeper :: Tests :: Storm-aggregate-coverage (jacoco-sonar)</name>
 
     <build>
         <plugins>
