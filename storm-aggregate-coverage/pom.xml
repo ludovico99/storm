@@ -24,7 +24,7 @@
 
     <artifactId>storm-aggr-coverage</artifactId>
 
-    <name>Apache BookKeeper :: Tests :: Storm-aggregate-coverage (jacoco-sonar)</name>
+    <name>storm-aggregate-coverage (jacoco-sonar)</name>
 
     <build>
         <plugins>
