@@ -251,7 +251,7 @@
 				</execution>	
 			</executions>
 		<configuration>
-              <argLine>-javaagent:../ba-dua-jars/ba-dua-agent-rt-0.6.0-all.jar -Doutput.file=target/badua.ser</argLine>
+              <argLine>-javaagent:${project.basedir}/../ba-dua-jars/ba-dua-agent-rt-0.6.0-all.jar -Doutput.file=target/badua.ser</argLine>
           </configuration>
           </plugin>
 		
@@ -274,16 +274,16 @@
                             <executable>java</executable>
                             <arguments>
                                         <argument>-jar</argument>
-                                        <argument>../ba-dua-jars/ba-dua-cli-0.6.0-all.jar</argument>
+                                        <argument>${project.basedir}/../ba-dua-jars/ba-dua-cli-0.6.0-all.jar</argument>
                                         <argument>report</argument>
                                         <argument>-input</argument>
-                                        <argument>.target/badua.ser</argument>
-					<argument>-classes</argument>
-					<argument>${project.build.outputDirectory}</argument>
-					<argument>-show-classes</argument>
-					<argument>-show-methods</argument>
-					<argument>-xml</argument>
-					<argument>.target/badua.xml</argument>
+                                        <argument>${project.build.directory}/badua.ser</argument>
+										<argument>-classes</argument>
+										<argument>${project.build.outputDirectory}</argument>
+										<argument>-show-classes</argument>
+										<argument>-show-methods</argument>
+										<argument>-xml</argument>
+										<argument>${project.build.directory}/badua.xml</argument>
 				   </arguments>
                 </configuration>
               </execution>
