@@ -27,6 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>storm-server</artifactId>
+	 <name>storm-server</name>
 
     <dependencies>
         <dependency>
@@ -165,10 +166,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
+               <!-- <configuration>
                     <forkCount>1</forkCount>
-                </configuration>
-            </plugin>
+                </configuration> -->
+            </plugin> 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
@@ -233,7 +234,7 @@
 	  
       <properties>
         <!-- Use a stable version instead of SNAPSHOT one -->
-        <argLine>-javaagent:../ba-dua-jars/ba-dua-agent-rt-0.6.0-all.jar -Doutput.file=target/badua.ser</argLine>
+        <argLine>-javaagent:${project.basedir}/../ba-dua-jars/ba-dua-agent-rt-0.6.0-all.jar -Doutput.file=target/badua.ser</argLine>
       </properties>
 	  
       <!-- Needed for generate the report -->

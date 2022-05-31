@@ -38,30 +38,9 @@ jobs:
           java-version: 11
           java-distribution: 'temurin'
           maven-version: 3.6.3
-
-      - name: Configure Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.4.2
-
-      - name: Configure NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14.19.3
-
-      - name: Configure Python (v. 3.x)
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
-
-      - name: Install libssl-dev
-        run: sudo apt-get install -y libssl-dev
-
-      - name: Install Mock Library with pip
-        run: pip install mock
         
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -P jacocoCoverageProfile verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ludovico99_storm
+        run: ./mvnw -B -P jacocoCoverageProfile verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ludovico99_storm
