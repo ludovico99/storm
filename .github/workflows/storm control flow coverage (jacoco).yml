@@ -48,4 +48,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -B -P jacocoCoverageProfile verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ludovico99_storm
+        run: sh ./mvnw -B -P jacocoCoverageProfile verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ludovico99_storm
