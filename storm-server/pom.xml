@@ -176,6 +176,7 @@
                 <configuration>
                     <reportsDirectories>
                         <file>${project.build.directory}/test-reports</file>
+						 <file>${project.build.directory}/surefire-reports</file>
                     </reportsDirectories>
                 </configuration>
             </plugin>
@@ -183,7 +184,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
+				     <reportsDirectories> 
+                    <file>${project.build.directory}/test-reports</file>
+					<file>${project.build.directory}/failsafe-reports</file>
+					</reportsDirectories>
                 </configuration>
             </plugin>
             <plugin>
@@ -236,18 +240,11 @@
       <!-- Needed for generate the report -->
       <build>
         <plugins>
-		 <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-       
+	   
 		 <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
+			<version>3.0.0-M5</version>
 			<executions>
 				<execution>
 					<goals>

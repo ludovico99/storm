@@ -98,7 +98,11 @@
         <joda-time.version>2.3</joda-time.version>
         <thrift.version>0.13.0</thrift.version>
         <junit.jupiter.version>5.5.1</junit.jupiter.version>
-        <surefire.version>2.22.2</surefire.version>
+		
+        <surefire.version>3.0.0-M5</surefire.version>
+		<failsafe.version>2.21.0</failsafe.version>
+		
+		
         <awaitility.version>3.1.0</awaitility.version>
         <hdrhistogram.version>2.1.10</hdrhistogram.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
@@ -161,6 +165,8 @@
         <module>storm-clojure</module>
         <module>storm-clojure-test</module>
         <module>storm-submit-tools</module>
+		
+		
 		<module>storm-aggregate-coverage</module>
     </modules>
 
@@ -1012,7 +1018,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${surefire.version}</version>
+                    <version>${failsafe.version}</version>
                   <!--  <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <includes>
@@ -1342,6 +1348,18 @@
                         <file>${project.build.directory}/test-reports</file>
                         <file>${project.build.directory}/surefire-reports</file>
                     </reportsDirectories>
+                </configuration>
+            </plugin>
+			
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+				<version>${failsafe.}</version>
+                <configuration>
+				     <reportsDirectories> 
+                    <file>${project.build.directory}/test-reports</file>
+					<file>${project.build.directory}/failsafe-reports</file>
+					</reportsDirectories>
                 </configuration>
             </plugin>
             <plugin>
