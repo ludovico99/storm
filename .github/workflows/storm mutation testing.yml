@@ -38,7 +38,7 @@ jobs:
           java-distribution: 'temurin'
           maven-version: 3.6.3
           
-      - name: Verify storm
+      - name: Verify Storm
         run: sh ./mvnw -B verify -P mutation-testingProfile
 
       - name: Upload PIT report

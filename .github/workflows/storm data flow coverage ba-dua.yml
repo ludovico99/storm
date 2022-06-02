@@ -39,7 +39,7 @@ jobs:
           java-distribution: 'temurin'
           maven-version: 3.6.3
   
-      - name: Verify Bookkeeper
+      - name: Verify Storm
         run: sh ./mvnw -B verify -P ba-dua-coverageProfile
 
       - name: Upload ba-dua report
