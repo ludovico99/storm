@@ -40,8 +40,8 @@ jobs:
           maven-version: 3.6.3
   
       - name: Verify Storm
-        run: sh ./mvnw -B verify -P ba-dua-coverageProfile
-
+        run: sh ./mvnw -B verify -P ba-dua-coverageProfile -X
+ 
       - name: Upload ba-dua report
         uses: actions/upload-artifact@v3
         with:
