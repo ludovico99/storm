@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 public class DummyTest {
 
-
     @Test
     public void dummyMethod (){
         HealthChecker ht = new HealthChecker();
