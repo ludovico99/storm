@@ -4,7 +4,7 @@ import org.apache.storm.healthcheck.HealthChecker;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class Dummy {
+public class DummyTest {
 
 
     @Test
