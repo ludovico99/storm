@@ -232,10 +232,6 @@
         <activeByDefault>false</activeByDefault>
       </activation>
 	  
-      <properties>
-        <!-- Use a stable version instead of SNAPSHOT one -->
-        <argLine>-javaagent:${project.basedir}/../ba-dua-jars/ba-dua-agent-rt-0.6.0-all.jar -Doutput.file=target/badua.ser</argLine>
-      </properties>
 	  
       <!-- Needed for generate the report -->
       <build>
@@ -249,6 +245,7 @@
 					<goals>
 						<goal>test</goal>
 					</goals>
+					<phase>install</phase>
 				</execution>	
 			</executions>
 		<configuration>
