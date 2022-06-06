@@ -49,3 +49,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: sh ./mvnw -B -P jacocoCoverageProfile verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ludovico99_storm
+      
+      - name: Upload jacoco report
+        uses: actions/upload-artifact@v3
+        with:
+         name: jacoco.html
+         path: target/site/jacoco/index.html
