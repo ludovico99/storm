@@ -236,8 +236,6 @@
         <activeByDefault>false</activeByDefault>
       </activation>
 	  
-	  
-      <!-- Needed for generate the report -->
       <build>
         <plugins>
 	   
