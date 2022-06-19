@@ -341,10 +341,10 @@
             <version>${pitest.version}</version>
             <configuration>
               <targetClasses>
-                <param></param>
+                <param>org.apache.storm.topology.topologyBuilder*</param>
               </targetClasses>
               <targetTests>
-                <param></param>
+                <param><param>org.apache.storm.topology.topologyBuilderTests*</param></param>
               </targetTests>
               <avoidCallsTo>
                 <avoidCallsTo>org.slf4j</avoidCallsTo>
