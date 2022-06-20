@@ -5,6 +5,7 @@ package org.apache.storm.topology;
 import org.apache.storm.generated.GlobalStreamId;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.hooks.IWorkerHook;
+import org.apache.storm.lambda.SerializableSupplier;
 import org.apache.storm.shade.com.google.common.collect.ImmutableSet;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.state.State;
@@ -25,6 +26,7 @@ import org.junit.runners.Parameterized;
 import java.util.*;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(value = Enclosed.class)
@@ -259,10 +261,16 @@ public class TopologyBuilderTests {
     public static class TestSetBolt {
 
         private TopologyBuilder topologyBuilder;
+
         private IBasicBolt basicBolt;
         private IRichBolt richBolt;
         private IStatefulBolt<?> statefulBolt;
+        private IStatefulWindowedBolt<?> statefulWindowedBolt;
+        private IStatefulWindowedBolt<?> statefulWindowedBoltPersistent;
+
         private IRichSpout richSpout;
+        private SerializableSupplier<?> supplier;
+
         private IWorkerHook workerHook;
         private Number parallelismHint;
 
@@ -272,19 +280,30 @@ public class TopologyBuilderTests {
         private boolean expectedValueBolts;
         private boolean expectedValueSpout;
         private boolean expectedWorkerHook;
+        private boolean expectedSupplier;
 
-        public TestSetBolt(ParamType spout, ParamType bolt, ParamType parallelismHint, ParamType workerHook) {
-            configure(spout, bolt, parallelismHint, workerHook);
+        public TestSetBolt(ParamType spout, ParamType bolt, ParamType parallelismHint, ParamType workerHook,
+                           ParamType serializableSupp) {
+            configure(spout, bolt, parallelismHint, workerHook, serializableSupp);
         }
 
-        private void configure(ParamType spout, ParamType bolt, ParamType parallelismHint, ParamType workerHook) {
+        private void configure(ParamType spout, ParamType bolt, ParamType parallelismHint, ParamType workerHook, ParamType serializableSupp) {
             this.topologyBuilder = new TopologyBuilder();
+            this.basicBolt = mock(IBasicBolt.class);
+            this.richBolt = mock(IRichBolt.class);
+            this.statefulBolt = mock(IStatefulBolt.class);
+            this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
+            when(statefulWindowedBolt.isPersistent()).thenReturn(false);
+
+            this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
+            when(statefulWindowedBoltPersistent.isPersistent()).thenReturn(true);
+
+            this.richSpout = mock(IRichSpout.class);
 
 
             switch (spout) {
                 case VALID_INSTANCE:
                     this.spoutsId = new String[]{"spout1", "spout2"};
-                    this.richSpout = mock(IRichSpout.class);
                     this.expectedValueSpout = false;
                     break;
                 case INVALID_INSTANCE:
@@ -300,10 +319,6 @@ public class TopologyBuilderTests {
 
             switch (bolt) {
                 case VALID_INSTANCE:
-                    this.basicBolt = mock(IBasicBolt.class);
-                    this.richBolt = mock(IRichBolt.class);
-                    this.statefulBolt = mock(IStatefulBolt.class);
-
                     this.boltsId = new String[]{"bolt1", "bolt2"};
                     this.expectedValueBolts = false;
 
@@ -376,18 +391,46 @@ public class TopologyBuilderTests {
                     this.expectedWorkerHook = true;
                     break;
             }
+
+            switch (serializableSupp){
+                case VALID_INSTANCE:
+                    this.supplier = new SerializableSupplier<Object>() {
+                        @Override
+                        public Object get() {
+                            return null;
+                        }
+                        private void writeObject(java.io.ObjectOutputStream stream) {
+                        }
+                    };
+                    this.expectedSupplier = false;
+                    break;
+                case INVALID_INSTANCE:
+                    this.supplier = new SerializableSupplier<Object>() {
+                        @Override
+                        public Object get() {
+                            return null;
+                        }
+                    };
+                    this.expectedSupplier = true;
+                    break;
+                case NULL_INSTANCE:
+                    this.supplier = null;
+                    this.expectedSupplier = true;
+                    break;
+            }
         }
 
         @Parameterized.Parameters
         public static Collection<Object[]> getParameters() {
 
             return Arrays.asList(new Object[][]{
-                    //SPOUT,                   BOLT,                   , PaparallelismHint >0     ,IWorkerHook
-                    {ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE},
-                    {ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE},
-                    {ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE},
-                    {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE},
-                    {ParamType.NULL_INSTANCE, ParamType.NULL_INSTANCE,   ParamType.VALID_INSTANCE,    ParamType.NULL_INSTANCE}
+                    //SPOUT,                   BOLT,                   , PaparallelismHint >0         ,IWorkerHook
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE},
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE},
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE},
+                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE},
+                    {ParamType.VALID_INSTANCE,   ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE},
+                    {ParamType.NULL_INSTANCE,    ParamType.NULL_INSTANCE,   ParamType.VALID_INSTANCE,  ParamType.NULL_INSTANCE, ParamType.NULL_INSTANCE}
             });
         }
 
@@ -430,16 +473,54 @@ public class TopologyBuilderTests {
         }
 
         @Test
+        public void testSetStatefulWindowedBolt() {
+            try {
+                topologyBuilder.setBolt(this.boltsId[0], this.statefulWindowedBolt, this.parallelismHint);
+                topologyBuilder.setBolt(this.boltsId[1], this.statefulWindowedBolt, this.parallelismHint);
+                Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBolts);
+            }
+        }
+
+        @Test
+        public void testSetStatefulWindowedBoltPersistent() {
+            try {
+                topologyBuilder.setBolt(this.boltsId[0], this.statefulWindowedBoltPersistent, this.parallelismHint);
+                topologyBuilder.setBolt(this.boltsId[1], this.statefulWindowedBoltPersistent, this.parallelismHint);
+                Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBolts);
+            }
+        }
+
+        @Test
         public void testSetSpout() {
             try {
                 topologyBuilder.setSpout(this.spoutsId[0], this.richSpout, this.parallelismHint);
                 topologyBuilder.setSpout(this.spoutsId[1], this.richSpout, this.parallelismHint);
+                Assert.assertFalse("No exception was expected", this.expectedValueSpout);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueSpout);
+            }
+        }
+
+        @Test
+        public void testSetSpoutSupplier() {
+            try {
+                topologyBuilder.setSpout(this.spoutsId[0], this.supplier, this.parallelismHint);
+                topologyBuilder.setSpout(this.spoutsId[1], this.supplier, this.parallelismHint);
                 Assert.assertFalse("No exception was expected", this.expectedValueSpout);
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueSpout);
             }
         }
+
 
         @Test
         public void testAddWorkerHook() {
