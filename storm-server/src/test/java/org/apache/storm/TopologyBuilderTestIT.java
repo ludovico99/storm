@@ -11,8 +11,6 @@ import org.junit.Test;
 import java.io.Serializable;
 
 
-
-@Ignore
 public class TopologyBuilderTestIT implements Serializable {
 
     private final WordCount wordCount = new WordCount();
