@@ -244,6 +244,7 @@ public class TopologyBuilderTests {
         private IStatefulWindowedBolt<?> statefulWindowedBoltPersistent;
         private Number parallelismHintBolts;
         private boolean expectedValueBolts;
+        private IWindowedBolt windowedBolt;
 
         private IRichSpout richSpout;
         private Number parallelismHintSpout;
@@ -263,6 +264,7 @@ public class TopologyBuilderTests {
         private IStatefulWindowedBolt<?> statefulWindowedBoltNP;
         private IStatefulWindowedBolt<?> statefulWindowedBoltPersistentNP;
         private boolean expectedValueBoltsNP;
+        private IWindowedBolt windowedBoltNP;
 
 
         public TestSetBolt(Object[] setSpoutTest,Object[] setBoltTest, Object[] addWorkerHookTest,Object[] setSpoutSupplier
@@ -291,6 +293,7 @@ public class TopologyBuilderTests {
                     this.basicBoltNP = mock(IBasicBolt.class);
                     this.richBoltNP = mock(IRichBolt.class);
                     this.statefulBoltNP = mock(IStatefulBolt.class);
+                    this.windowedBoltNP=mock(IWindowedBolt.class);
                     this.statefulWindowedBoltNP = mock(IStatefulWindowedBolt.class);
                     when(statefulWindowedBoltNP.isPersistent()).thenReturn(false);
                     this.statefulWindowedBoltPersistentNP = mock(IStatefulWindowedBolt.class);
@@ -422,6 +425,7 @@ public class TopologyBuilderTests {
                     this.basicBolt = mock(IBasicBolt.class);
                     this.richBolt = mock(IRichBolt.class);
                     this.statefulBolt = mock(IStatefulBolt.class);
+                    this.windowedBolt = mock(IWindowedBolt.class);
                     this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
                     when(statefulWindowedBolt.isPersistent()).thenReturn(false);
 
@@ -562,7 +566,7 @@ public class TopologyBuilderTests {
         }
 
         @Test
-        public void testSetWindowedBoltNoParallelismHint() {
+        public void testSetStatefulWindowedBoltNoParallelismHint() {
             try {
                 topologyBuilder.setBolt(this.boltsIdNP[0], this.statefulWindowedBoltNP);
                 topologyBuilder.setBolt(this.boltsIdNP[1], this.statefulWindowedBoltNP);
@@ -572,6 +576,30 @@ public class TopologyBuilderTests {
                 Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
             }
 
+        }
+
+        @Test
+        public void testWindowedBoltNoParallelismHint() {
+            try {
+                topologyBuilder.setBolt(this.boltsIdNP[0], this.windowedBoltNP);
+                topologyBuilder.setBolt(this.boltsIdNP[1], this.windowedBoltNP);
+                Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
+            }
+        }
+
+        @Test
+        public void testWindowedBolt() {
+            try {
+                topologyBuilder.setBolt(this.boltsId[0], this.windowedBolt, this.parallelismHintBolts);
+                topologyBuilder.setBolt(this.boltsId[1], this.windowedBolt,this.parallelismHintBolts);
+                Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBolts);
+            }
         }
 
 

@@ -39,7 +39,7 @@ public class TopologyBuilderTestIT implements Serializable {
 
             cluster.shutdown();
 
-            Assert.assertEquals(27,WordCount.counts.size());
+            Assert.assertEquals(27, WordCount.counts.size());
 
 
         } catch (Exception e) {
