@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
-public class BasicBoltExecutorSimpleTest {
+public class BasicBoltExecutorSimpleTests {
     private BasicBoltExecutor executor;
     private OutputCollector outputCollector;
     private IBasicBolt mockBolt;
@@ -31,7 +31,7 @@ public class BasicBoltExecutorSimpleTest {
 
     private boolean exceptionInConfigPhase = false;
 
-    public BasicBoltExecutorSimpleTest(TopologyContextEnum topologyContextEnum) {
+    public BasicBoltExecutorSimpleTests(TopologyContextEnum topologyContextEnum) {
         configure(topologyContextEnum);
     }
 

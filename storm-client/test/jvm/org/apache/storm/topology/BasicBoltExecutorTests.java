@@ -1,7 +1,6 @@
 package org.apache.storm.topology;
 
 
-import org.apache.storm.Config;
 import org.apache.storm.generated.GlobalStreamId;
 import org.apache.storm.generated.Grouping;
 import org.apache.storm.task.OutputCollector;
@@ -25,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 @Ignore
 @RunWith(Parameterized.class)
-public class BasicBoltExecutorTest {
+public class BasicBoltExecutorTests {
     private BasicBoltExecutor executor;
     private OutputCollector outputCollector;
     private IBasicBolt basicBolt;
@@ -38,7 +37,7 @@ public class BasicBoltExecutorTest {
     private boolean exceptionInConfigPhase = false;
 
 
-    public BasicBoltExecutorTest(TopologyContextEnum topologyContextEnum) {
+    public BasicBoltExecutorTests(TopologyContextEnum topologyContextEnum) {
         configure(topologyContextEnum);
     }
 
