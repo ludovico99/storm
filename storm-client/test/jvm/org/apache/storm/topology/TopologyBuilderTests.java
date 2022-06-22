@@ -15,7 +15,9 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.topology.base.BaseStatefulBolt;
 import org.apache.storm.tuple.Tuple;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -23,6 +25,8 @@ import org.junit.runners.Parameterized;
 
 import java.util.*;
 
+import static org.apache.storm.spout.CheckpointSpout.CHECKPOINT_COMPONENT_ID;
+import static org.apache.storm.spout.CheckpointSpout.CHECKPOINT_STREAM_ID;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,11 +47,11 @@ public class TopologyBuilderTests {
         private final String[] bolts = {"bolt1", "bolt2", "bolt3"};
         private final String spout = "spout1";
 
-        public TestTopologyCreation(ParamType spout, ParamType bolt) {
-            configure(spout, bolt);
+        public TestTopologyCreation(ParamType spout, ParamType bolt, TopologyConfig topologyConfig) {
+            configure(spout, bolt, topologyConfig);
         }
 
-        private void configure(ParamType spout, ParamType bolt) {
+        private void configure(ParamType spout, ParamType bolt, TopologyConfig topologyConfig) {
             this.topologyBuilder = new TopologyBuilder();
             this.boltParamType = bolt;
             this.spoutParamType = spout;
@@ -68,26 +72,60 @@ public class TopologyBuilderTests {
                     break;
             }
 
+            switch (topologyConfig){
+                case STATEFUL_BOLT:
+                    this.topologyBuilder.setSpout(this.spout, richSpout());
 
-            this.topologyBuilder.setSpout(this.spout, richSpout());
+                    this.topologyBuilder.setBolt(this.bolts[0], richBolt(), 1)
+                            .shuffleGrouping(this.spout);
+                    this.topologyBuilder.setBolt(this.bolts[1], statefulBolt(), 1)
+                            .shuffleGrouping(this.bolts[0]);
+                    this.topologyBuilder.setBolt(this.bolts[2], basicBolt(), 1)
+                            .shuffleGrouping(this.bolts[1]).shuffleGrouping(this.spout);
 
-            this.topologyBuilder.setBolt(this.bolts[0], statefulBolt(), 1)
-                    .shuffleGrouping(this.spout);
-            this.topologyBuilder.setBolt(this.bolts[1], richBolt(), 1)
-                    .shuffleGrouping(this.bolts[0]);
-            this.topologyBuilder.setBolt(this.bolts[2], basicBolt(), 1)
-                    .shuffleGrouping(this.bolts[1]).shuffleGrouping(this.spout);
+                    this.expectedSpoutsSet = ImmutableSet.of("spout1", "$checkpointspout");
 
-            this.expectedSpoutsSet = ImmutableSet.of("spout1", "$checkpointspout");
 
-            this.expectedInputForBolts = new ArrayList<>();
-            this.expectedInputForBolts.add(ImmutableSet.of(new GlobalStreamId(this.spout, "default"),
-                    new GlobalStreamId("$checkpointspout", "$checkpoint")));
-            this.expectedInputForBolts.add(ImmutableSet.of(new GlobalStreamId(this.bolts[0], "default"),
-                    new GlobalStreamId(this.bolts[0], "$checkpoint")));
-            this.expectedInputForBolts.add(ImmutableSet.of(new GlobalStreamId(this.bolts[1], "default"),
-                    new GlobalStreamId(this.bolts[1], "$checkpoint"),new GlobalStreamId(this.spout, "default"),
-                    new GlobalStreamId("$checkpointspout", "$checkpoint")));
+                    this.expectedInputForBolts = new ArrayList<>();
+
+                    this.expectedInputForBolts.add(ImmutableSet.of(
+                            new GlobalStreamId(this.spout, "default"),
+                            new GlobalStreamId(CHECKPOINT_COMPONENT_ID, CHECKPOINT_STREAM_ID)));
+                    this.expectedInputForBolts.add(ImmutableSet.of(
+                            new GlobalStreamId(this.bolts[0], "default"),
+                            new GlobalStreamId(this.bolts[0],CHECKPOINT_STREAM_ID)));
+                    this.expectedInputForBolts.add(ImmutableSet.of(
+                            new GlobalStreamId(this.bolts[1], "default"),
+                            new GlobalStreamId(this.bolts[1], CHECKPOINT_STREAM_ID),
+                            new GlobalStreamId(this.spout, "default"),
+                            new GlobalStreamId(CHECKPOINT_COMPONENT_ID, CHECKPOINT_STREAM_ID)));
+
+
+                    break;
+                case NO_STATEFUL_BOLT:
+                    this.topologyBuilder.setSpout(this.spout, richSpout());
+
+                    this.topologyBuilder.setBolt(this.bolts[0], richBolt(), 1)
+                            .shuffleGrouping(this.spout);
+                    this.topologyBuilder.setBolt(this.bolts[1], richBolt(), 1)
+                            .shuffleGrouping(this.bolts[0]);
+                    this.topologyBuilder.setBolt(this.bolts[2], basicBolt(), 1)
+                            .shuffleGrouping(this.bolts[1]).shuffleGrouping(this.spout);
+
+                    this.expectedSpoutsSet = ImmutableSet.of(this.spout);
+
+
+                    this.expectedInputForBolts = new ArrayList<>();
+                    this.expectedInputForBolts.add(ImmutableSet.of(new GlobalStreamId(this.spout, "default")));
+                    this.expectedInputForBolts.add(ImmutableSet.of(new GlobalStreamId(this.bolts[0], "default")));
+                    this.expectedInputForBolts.add(ImmutableSet.of(
+                            new GlobalStreamId(this.bolts[1], "default"),
+                            new GlobalStreamId(this.spout,"default")));
+
+                    break;
+
+            }
+
         }
 
 
@@ -96,10 +134,11 @@ public class TopologyBuilderTests {
 
             return Arrays.asList(new Object[][]{
                     //SPOUT                      BOLT
-                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE},
-                    {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE},
-                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE},
-                    {ParamType.VALID_INSTANCE,   ParamType.INVALID_INSTANCE}
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfig.STATEFUL_BOLT},
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfig.NO_STATEFUL_BOLT},
+                    {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, TopologyConfig.STATEFUL_BOLT},
+                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, TopologyConfig.STATEFUL_BOLT},
+                    {ParamType.VALID_INSTANCE,   ParamType.INVALID_INSTANCE, TopologyConfig.STATEFUL_BOLT}
 
             });
         }
@@ -208,7 +247,7 @@ public class TopologyBuilderTests {
         public void test_createTopology() {
             try {
 
-                StormTopology topology = topologyBuilder.createTopology();
+                StormTopology topology = this.topologyBuilder.createTopology();
 
                 Assert.assertNotNull(topology);
 
@@ -228,12 +267,14 @@ public class TopologyBuilderTests {
                 Assert.assertTrue("An exception was expected", this.expectedException);
             }
         }
+
     }
+
 
     @RunWith(Parameterized.class)
     public static class TestSetBolt {
 
-        private final TopologyBuilder topologyBuilder;
+        private TopologyBuilder topologyBuilder;
         private String[] boltsId;
         private String[] spoutsId;
 
@@ -269,8 +310,6 @@ public class TopologyBuilderTests {
 
         public TestSetBolt(Object[] setSpoutTest,Object[] setBoltTest, Object[] addWorkerHookTest,Object[] setSpoutSupplier
                 , Object[] noParallelism) {
-
-            this.topologyBuilder = new TopologyBuilder();
 
             configureSetBolt((ParamType) setBoltTest[0], (ParamType) setBoltTest[1], (Boolean) setBoltTest[2]);
 
@@ -511,6 +550,12 @@ public class TopologyBuilderTests {
                     },
             });
         }
+
+        @Before
+        public void set_up(){
+            this.topologyBuilder = new TopologyBuilder();
+        }
+
 
         @Test
         public void testSetRichBolt() {
