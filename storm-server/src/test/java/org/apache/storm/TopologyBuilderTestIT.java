@@ -5,7 +5,6 @@ import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.utils.Utils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -21,7 +20,7 @@ public class TopologyBuilderTestIT implements Serializable {
         try (LocalCluster cluster = new LocalCluster()) {
 
             TopologyBuilder builder = new TopologyBuilder();
-            builder.setSpout("spout", new RandomSentenceSpout(), 5);
+            builder.setSpout("spout", new SentenceSpout(), 5);
             //shufflegrouping subscribes to the spout, and equally distributes
             //tuples (sentences) across instances of the SplitSentence bolt
             builder.setBolt("split", new SplitSentence(), 8).shuffleGrouping("spout");

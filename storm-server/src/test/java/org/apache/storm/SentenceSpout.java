@@ -12,8 +12,7 @@ import org.apache.storm.utils.Utils;
 import java.util.Map;
 
 
-//This spout randomly emits sentences
-public class RandomSentenceSpout extends BaseRichSpout implements CompletableSpout {
+public class SentenceSpout extends BaseRichSpout implements CompletableSpout {
     //Collector used to emit output
     SpoutOutputCollector _collector;
     //Used to generate a random number

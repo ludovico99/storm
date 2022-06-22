@@ -33,10 +33,8 @@ public class TopologyBuilderTests {
     @RunWith(Parameterized.class)
     public static class TestTopologyCreation {
         private TopologyBuilder topologyBuilder;
-        private IBasicBolt basicBolt;
-        private IRichBolt richBolt;
-        private IStatefulBolt<?> statefulBolt;
-        private IRichSpout richSpout;
+        private ParamType boltParamType;
+        private ParamType spoutParamType;
         private boolean expectedException = false;
         private Object expectedSpoutsSet;
         private List<ImmutableSet<GlobalStreamId>> expectedInputForBolts;
@@ -51,119 +49,33 @@ public class TopologyBuilderTests {
 
         private void configure(ParamType spout, ParamType bolt) {
             this.topologyBuilder = new TopologyBuilder();
-
+            this.boltParamType = bolt;
+            this.spoutParamType = spout;
 
             switch (spout) {
                 case VALID_INSTANCE:
-                    this.richSpout = new BaseRichSpout() {
-                        @Override
-                        public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
-
-                        @Override
-                        public void nextTuple() {
-
-
-                        }
-
-                        @Override
-                        public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-                        private void writeObject(java.io.ObjectOutputStream stream) {}
-                    };
                     break;
                 case INVALID_INSTANCE:
-                    this.richSpout = new BaseRichSpout() {
-                        @Override
-                        public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
-
-                        @Override
-                        public void nextTuple() {
-
-
-                        }
-
-                        @Override
-                        public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-                    };
-
                     this.expectedException = true;
-
                     break;
             }
 
             switch (bolt) {
                 case VALID_INSTANCE:
-                    this.basicBolt = new BaseBasicBolt() {
-                        @Override
-                        public void execute(Tuple input, BasicOutputCollector collector) {}
-
-                        @Override
-                        public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-                        private void writeObject(java.io.ObjectOutputStream stream) {}
-                    };
-
-                    this.richBolt = new BaseRichBolt() {
-                        @Override
-                        public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
-
-                        @Override
-                        public void execute(Tuple input) {}
-
-                        @Override
-                        public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-                        private void writeObject(java.io.ObjectOutputStream stream) {}
-                    };
-                    this.statefulBolt = new BaseStatefulBolt<State>() {
-                        @Override
-                        public void initState(State state) {}
-
-                        @Override
-                        public void execute(Tuple input) {}
-
-                        private void writeObject(java.io.ObjectOutputStream stream) {}
-                    };
-
                     break;
                 case INVALID_INSTANCE:
-                    this.basicBolt = new BaseBasicBolt() {
-                        @Override
-                        public void execute(Tuple input, BasicOutputCollector collector) {}
-
-                        @Override
-                        public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-                    };
-
-                    this.richBolt = new BaseRichBolt() {
-                        @Override
-                        public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
-
-                        @Override
-                        public void execute(Tuple input) {}
-
-                        @Override
-                        public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-                    };
-                    this.statefulBolt = new BaseStatefulBolt<State>() {
-                        @Override
-                        public void initState(State state) {}
-
-                        @Override
-                        public void execute(Tuple input) {}
-                    };
                     this.expectedException = true;
                     break;
             }
 
 
-            this.topologyBuilder.setSpout(this.spout, this.richSpout);
+            this.topologyBuilder.setSpout(this.spout, richSpout());
 
-            this.topologyBuilder.setBolt(this.bolts[0], this.statefulBolt, 1)
+            this.topologyBuilder.setBolt(this.bolts[0], statefulBolt(), 1)
                     .shuffleGrouping(this.spout);
-            this.topologyBuilder.setBolt(this.bolts[1], this.richBolt, 1)
+            this.topologyBuilder.setBolt(this.bolts[1], richBolt(), 1)
                     .shuffleGrouping(this.bolts[0]);
-            this.topologyBuilder.setBolt(this.bolts[2], this.basicBolt, 1)
+            this.topologyBuilder.setBolt(this.bolts[2], basicBolt(), 1)
                     .shuffleGrouping(this.bolts[1]).shuffleGrouping(this.spout);
 
             this.expectedSpoutsSet = ImmutableSet.of("spout1", "$checkpointspout");
@@ -192,6 +104,105 @@ public class TopologyBuilderTests {
             });
         }
 
+        private IRichBolt richBolt() {
+            if (this.boltParamType.equals(ParamType.VALID_INSTANCE)) return new BaseRichBolt() {
+                @Override
+                public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
+
+                @Override
+                public void execute(Tuple input) {}
+
+                @Override
+                public void declareOutputFields(OutputFieldsDeclarer declarer) {}
+
+                private void writeObject(java.io.ObjectOutputStream stream) {}
+
+            };
+            else {
+                return new BaseRichBolt() {
+                    @Override
+                    public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
+
+                    @Override
+                    public void execute(Tuple input) {}
+
+                    @Override
+                    public void declareOutputFields(OutputFieldsDeclarer declarer) {}
+
+                };
+            }
+        }
+
+        private IBasicBolt basicBolt() {
+            if (this.boltParamType.equals(ParamType.VALID_INSTANCE)) return new BaseBasicBolt() {
+                @Override
+                public void execute(Tuple input, BasicOutputCollector collector) {}
+
+                @Override
+                public void declareOutputFields(OutputFieldsDeclarer declarer) {}
+
+                private void writeObject(java.io.ObjectOutputStream stream) {}
+            };
+            else {
+                return new BaseBasicBolt() {
+                    @Override
+                    public void execute(Tuple input, BasicOutputCollector collector) {}
+
+                    @Override
+                    public void declareOutputFields(OutputFieldsDeclarer declarer) {}
+                };
+            }
+        }
+
+        private IStatefulBolt<?> statefulBolt() {
+            if (this.boltParamType.equals(ParamType.VALID_INSTANCE)) return new BaseStatefulBolt<State>() {
+                @Override
+                public void initState(State state) {}
+
+                @Override
+                public void execute(Tuple input) {}
+
+                private void writeObject(java.io.ObjectOutputStream stream) {}
+            };
+            else {
+                return new BaseStatefulBolt<State>() {
+                    @Override
+                    public void initState(State state) {}
+
+                    @Override
+                    public void execute(Tuple input) {}
+                };
+            }
+        }
+
+        private IRichSpout richSpout() {
+            if (this.spoutParamType.equals(ParamType.VALID_INSTANCE)) return new BaseRichSpout() {
+                @Override
+                public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
+
+                @Override
+                public void nextTuple() {}
+
+                @Override
+                public void declareOutputFields(OutputFieldsDeclarer declarer) {}
+
+                private void writeObject(java.io.ObjectOutputStream stream) {}
+            };
+            else {
+                return new BaseRichSpout() {
+                    @Override
+                    public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
+
+                    @Override
+                    public void nextTuple() {}
+
+                    @Override
+                    public void declareOutputFields(OutputFieldsDeclarer declarer) {}
+                };
+
+            }
+        }
+
 
         @Test
         public void test_createTopology() {
@@ -209,6 +220,8 @@ public class TopologyBuilderTests {
                 Assert.assertEquals(this.expectedInputForBolts.get(1), topology.get_bolts().get(this.bolts[1]).get_common().get_inputs().keySet());
 
                 Assert.assertEquals(this.expectedInputForBolts.get(2), topology.get_bolts().get(this.bolts[2]).get_common().get_inputs().keySet());
+
+                Assert.assertFalse("No exception wa expected", this.expectedException);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -236,7 +249,6 @@ public class TopologyBuilderTests {
         private Number parallelismHintSpout;
         private boolean expectedValueSpout;
 
-
         private SerializableSupplier<?> supplier;
         private Number parallelismHintSpoutSupplier;
         private boolean expectedSupplier;
@@ -244,8 +256,17 @@ public class TopologyBuilderTests {
         private IWorkerHook workerHook;
         private boolean expectedWorkerHook;
 
+        private String[] boltsIdNP;
+        private IBasicBolt basicBoltNP;
+        private IRichBolt richBoltNP;
+        private IStatefulBolt<?> statefulBoltNP;
+        private IStatefulWindowedBolt<?> statefulWindowedBoltNP;
+        private IStatefulWindowedBolt<?> statefulWindowedBoltPersistentNP;
+        private boolean expectedValueBoltsNP;
 
-        public TestSetBolt(Object[] setSpoutTest,Object[] setBoltTest, Object[] addWorkerHookTest,Object[] setSpoutSupplier) {
+
+        public TestSetBolt(Object[] setSpoutTest,Object[] setBoltTest, Object[] addWorkerHookTest,Object[] setSpoutSupplier
+                , Object[] noParallelism) {
 
             this.topologyBuilder = new TopologyBuilder();
 
@@ -257,6 +278,36 @@ public class TopologyBuilderTests {
 
             configureAddWorkerHook((ParamType) addWorkerHookTest[0], (Boolean) addWorkerHookTest[1]);
 
+            configureNoParallelism((ParamType) noParallelism[0], (Boolean) noParallelism[1]);
+
+        }
+
+        private void configureNoParallelism(ParamType bolt, Boolean expectedValueBoltsNP) {
+            this.expectedValueBoltsNP = expectedValueBoltsNP;
+
+            switch (bolt) {
+                case VALID_INSTANCE:
+                case INVALID_INSTANCE:
+                    this.basicBoltNP = mock(IBasicBolt.class);
+                    this.richBoltNP = mock(IRichBolt.class);
+                    this.statefulBoltNP = mock(IStatefulBolt.class);
+                    this.statefulWindowedBoltNP = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBoltNP.isPersistent()).thenReturn(false);
+                    this.statefulWindowedBoltPersistentNP = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBoltPersistentNP.isPersistent()).thenReturn(true);
+                    break;
+
+                case NULL_INSTANCE:
+                    this.basicBoltNP = null;
+                    this.richBoltNP = null;
+                    this.statefulBoltNP = null;
+                    this.statefulWindowedBoltNP = null;
+                    this.statefulWindowedBoltPersistentNP = null;
+                    break;
+            }
+
+            if(bolt.equals(ParamType.VALID_INSTANCE))this.boltsIdNP = new String[]{"bolt1", "bolt2"};
+            else this.boltsIdNP = new String[]{"bolt", "bolt"};
 
         }
 
@@ -267,30 +318,21 @@ public class TopologyBuilderTests {
                 case VALID_INSTANCE:
                     this.workerHook = new IWorkerHook() {
                         @Override
-                        public void start(Map<String, Object> topoConf, WorkerTopologyContext context) {
-
-                        }
+                        public void start(Map<String, Object> topoConf, WorkerTopologyContext context) {}
 
                         @Override
-                        public void shutdown() {
+                        public void shutdown() {}
 
-                        }
-
-                        private void writeObject(java.io.ObjectOutputStream stream) {
-                        }
+                        private void writeObject(java.io.ObjectOutputStream stream) {}
                     };
                     break;
                 case INVALID_INSTANCE:
                     this.workerHook = new IWorkerHook() {
                         @Override
-                        public void start(Map<String, Object> topoConf, WorkerTopologyContext context) {
-
-                        }
+                        public void start(Map<String, Object> topoConf, WorkerTopologyContext context) {}
 
                         @Override
-                        public void shutdown() {
-
-                        }
+                        public void shutdown() {}
                     };
                     break;
 
@@ -314,8 +356,7 @@ public class TopologyBuilderTests {
                             return null;
                         }
 
-                        private void writeObject(java.io.ObjectOutputStream stream) {
-                        }
+                        private void writeObject(java.io.ObjectOutputStream stream) {}
                     };
                     break;
                 case INVALID_INSTANCE:
@@ -338,8 +379,6 @@ public class TopologyBuilderTests {
                     this.parallelismHintSpoutSupplier = null;
                     break;
             }
-
-
 
         }
 
@@ -370,36 +409,32 @@ public class TopologyBuilderTests {
                     this.parallelismHintSpout = null;
                     break;
             }
-
-
         }
 
         private void configureSetBolt(ParamType bolt, ParamType parallelismHint, boolean expectedValueBolts) {
-
-            this.basicBolt = mock(IBasicBolt.class);
-            this.richBolt = mock(IRichBolt.class);
-            this.statefulBolt = mock(IStatefulBolt.class);
-            this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
-            when(statefulWindowedBolt.isPersistent()).thenReturn(false);
-
-            this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
-            when(statefulWindowedBoltPersistent.isPersistent()).thenReturn(true);
 
             this.expectedValueBolts = expectedValueBolts;
 
             switch (bolt) {
                 case VALID_INSTANCE:
-                    this.boltsId = new String[]{"bolt1", "bolt2"};
-                    break;
-
                 case INVALID_INSTANCE:
-                    this.boltsId = new String[]{"bolt", "bolt"};
+                    this.boltsId = new String[]{"bolt1", "bolt2"};
+                    this.basicBolt = mock(IBasicBolt.class);
+                    this.richBolt = mock(IRichBolt.class);
+                    this.statefulBolt = mock(IStatefulBolt.class);
+                    this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBolt.isPersistent()).thenReturn(false);
+
+                    this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBoltPersistent.isPersistent()).thenReturn(true);
                     break;
 
                 case NULL_INSTANCE:
                     this.basicBolt = null;
                     this.richBolt = null;
                     this.statefulBolt = null;
+                    this.statefulWindowedBolt = null;
+                    this.statefulWindowedBoltPersistent = null;
                     break;
             }
 
@@ -414,6 +449,9 @@ public class TopologyBuilderTests {
                     this.parallelismHintBolts = null;
                     break;
             }
+
+            if(bolt.equals(ParamType.VALID_INSTANCE))this.boltsId = new String[]{"bolt1", "bolt2"};
+            else this.boltsId = new String[]{"bolt", "bolt"};
         }
 
         @Parameterized.Parameters
@@ -427,7 +465,10 @@ public class TopologyBuilderTests {
                             //IWorkerHook
                             new Object[] {ParamType.VALID_INSTANCE, false},
                                          //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] { ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, false}},
+                            new Object[] { ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, false},
+                            //BOLT
+                            new Object[] {ParamType.VALID_INSTANCE, false}
+                    },
 
                                     //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
                     {new Object[] { ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
@@ -436,7 +477,10 @@ public class TopologyBuilderTests {
                             //IWorkerHook
                             new Object[] {ParamType.INVALID_INSTANCE, true},
                                          //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true}},
+                            new Object[] {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
+                                          //BOLT
+                            new Object[] {ParamType.INVALID_INSTANCE, true}
+                    },
 
                                     //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
                     {new Object[] { ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
@@ -445,18 +489,22 @@ public class TopologyBuilderTests {
                             //IWorkerHook
                             new Object[] {ParamType.VALID_INSTANCE, false},
                             //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] {ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true}},
+                            new Object[] {ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
+                                         //BOLT
+                            new Object[] {ParamType.INVALID_INSTANCE, false}
+                    },
 
-                            //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
-                    {new Object[] { ParamType.NULL_INSTANCE, ParamType.VALID_INSTANCE, true},
+                                  //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
+                    {new Object[] { ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, false},
                             //BOLT,                    PaparallelismHint >0
                             new Object[] {ParamType.NULL_INSTANCE, ParamType.VALID_INSTANCE, true},
                             //IWorkerHook
                             new Object[] {ParamType.NULL_INSTANCE, true},
                             //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] {ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, true}},
-
-
+                            new Object[] {ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, false},
+                                        //BOLT
+                            new Object[] {ParamType.INVALID_INSTANCE, false}
+                    },
             });
         }
 
@@ -472,6 +520,61 @@ public class TopologyBuilderTests {
             }
 
         }
+
+        @Test
+        public void testSetRichBoltNoParallelismHint() {
+            try {
+                topologyBuilder.setBolt(this.boltsIdNP[0], this.richBoltNP);
+                topologyBuilder.setBolt(this.boltsIdNP[1], this.richBoltNP);
+                Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
+            }
+
+        }
+
+        @Test
+        public void testSetBasicBoltNoParallelismHint() {
+            try {
+                topologyBuilder.setBolt(this.boltsIdNP[0], this.basicBoltNP);
+                topologyBuilder.setBolt(this.boltsIdNP[1], this.basicBoltNP);
+                Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
+            }
+
+        }
+
+
+        @Test
+        public void testSetStatefulBoltNoParallelismHint() {
+            try {
+                topologyBuilder.setBolt(this.boltsIdNP[0], this.statefulBoltNP);
+                topologyBuilder.setBolt(this.boltsIdNP[1], this.statefulBoltNP);
+                Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
+            }
+
+        }
+
+        @Test
+        public void testSetWindowedBoltNoParallelismHint() {
+            try {
+                topologyBuilder.setBolt(this.boltsIdNP[0], this.statefulWindowedBoltNP);
+                topologyBuilder.setBolt(this.boltsIdNP[1], this.statefulWindowedBoltNP);
+                Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
+            }
+
+        }
+
+
 
         @Test
         public void testSetBasicBolt() {

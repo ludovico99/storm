@@ -16,7 +16,6 @@ import org.apache.storm.tuple.Values;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-//There are a variety of bolt types. In this case, use BaseBasicBolt
 public class WordCount extends BaseBasicBolt {
     //Create logger for this class
     private static final Logger logger = LogManager.getLogger(WordCount.class);
