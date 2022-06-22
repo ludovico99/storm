@@ -466,7 +466,7 @@ public class TopologyBuilderTests {
                             new Object[] {ParamType.VALID_INSTANCE, false},
                                          //Serializable supplier,      , PaparallelismHint >0
                             new Object[] { ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, false},
-                            //BOLT
+                                        //BOLT
                             new Object[] {ParamType.VALID_INSTANCE, false}
                     },
 
@@ -491,7 +491,7 @@ public class TopologyBuilderTests {
                             //Serializable supplier,      , PaparallelismHint >0
                             new Object[] {ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
                                          //BOLT
-                            new Object[] {ParamType.INVALID_INSTANCE, false}
+                            new Object[] {ParamType.INVALID_INSTANCE, true}
                     },
 
                                   //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
@@ -503,7 +503,7 @@ public class TopologyBuilderTests {
                             //Serializable supplier,      , PaparallelismHint >0
                             new Object[] {ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, false},
                                         //BOLT
-                            new Object[] {ParamType.INVALID_INSTANCE, false}
+                            new Object[] {ParamType.INVALID_INSTANCE, true}
                     },
             });
         }
