@@ -47,11 +47,11 @@ public class TopologyBuilderTests {
         private final String[] bolts = {"bolt1", "bolt2", "bolt3"};
         private final String spout = "spout1";
 
-        public TestTopologyCreation(ParamType spout, ParamType bolt, TopologyConfig topologyConfig) {
+        public TestTopologyCreation(ParamType spout, ParamType bolt, TopologyConfigEnum topologyConfig) {
             configure(spout, bolt, topologyConfig);
         }
 
-        private void configure(ParamType spout, ParamType bolt, TopologyConfig topologyConfig) {
+        private void configure(ParamType spout, ParamType bolt, TopologyConfigEnum topologyConfig) {
             this.topologyBuilder = new TopologyBuilder();
             this.boltParamType = bolt;
             this.spoutParamType = spout;
@@ -134,11 +134,11 @@ public class TopologyBuilderTests {
 
             return Arrays.asList(new Object[][]{
                     //SPOUT                      BOLT
-                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfig.STATEFUL_BOLT},
-                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfig.NO_STATEFUL_BOLT},
-                    {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, TopologyConfig.STATEFUL_BOLT},
-                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, TopologyConfig.STATEFUL_BOLT},
-                    {ParamType.VALID_INSTANCE,   ParamType.INVALID_INSTANCE, TopologyConfig.STATEFUL_BOLT}
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT},
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfigEnum.NO_STATEFUL_BOLT},
+                    {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT},
+                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT},
+                    {ParamType.VALID_INSTANCE,   ParamType.INVALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT}
 
             });
         }

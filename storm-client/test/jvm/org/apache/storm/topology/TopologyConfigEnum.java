@@ -1,6 +1,6 @@
 package org.apache.storm.topology;
 
-public enum TopologyConfig {
+public enum TopologyConfigEnum {
     STATEFUL_BOLT,
     NO_STATEFUL_BOLT
 }
