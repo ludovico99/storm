@@ -1,10 +1,9 @@
 name: CI/CD Control flow coverage (jacoco and Sonar) for Storm
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ master ]
 jobs:
   build:
     name: Build
@@ -53,5 +52,5 @@ jobs:
       - name: Upload jacoco report
         uses: actions/upload-artifact@v3
         with:
-         name: jacoco.html
-         path: storm-aggregate-coverage/target/site/jacoco-aggregate/index.html
+         name: jacoco
+         path: storm-aggregate-coverage/target/site/jacoco-aggregate

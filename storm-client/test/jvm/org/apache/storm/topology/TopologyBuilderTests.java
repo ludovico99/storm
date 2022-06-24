@@ -15,7 +15,6 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.topology.base.BaseStatefulBolt;
 import org.apache.storm.tuple.Tuple;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -311,23 +310,43 @@ public class TopologyBuilderTests {
         public TestSetBolt(Object[] setSpoutTest,Object[] setBoltTest, Object[] addWorkerHookTest,Object[] setSpoutSupplier
                 , Object[] noParallelism) {
 
-            configureSetBolt((ParamType) setBoltTest[0], (ParamType) setBoltTest[1], (Boolean) setBoltTest[2]);
+            configureSetBolt((StringType) setBoltTest[0],(ParamType) setBoltTest[1], (ParamType) setBoltTest[2], (Boolean) setBoltTest[3]);
 
-            configureSetSpout((ParamType) setSpoutTest[0], (ParamType) setSpoutTest[1], (Boolean) setSpoutTest[2]);
+            configureSetSpout((StringType) setSpoutTest[0], (ParamType) setSpoutTest[1], (ParamType) setSpoutTest[2], (Boolean) setSpoutTest[3]);
 
-            configureSetSpoutSupplier((ParamType) setSpoutSupplier[0], (ParamType) setSpoutSupplier[1], (Boolean) setSpoutSupplier[2]);
+            configureSetSpoutSupplier((StringType) setSpoutSupplier[0], (ParamType) setSpoutSupplier[1], (ParamType) setSpoutSupplier[2], (Boolean) setSpoutSupplier[3]);
 
             configureAddWorkerHook((ParamType) addWorkerHookTest[0], (Boolean) addWorkerHookTest[1]);
 
-            configureNoParallelism((ParamType) noParallelism[0], (Boolean) noParallelism[1]);
+            configureNoParallelism((StringType) noParallelism[0], (ParamType) noParallelism[1], (Boolean) noParallelism[2]);
 
         }
 
-        private void configureNoParallelism(ParamType bolt, Boolean expectedValueBoltsNP) {
+        private void configureNoParallelism(StringType stringType, ParamType bolt, Boolean expectedValueBoltsNP) {
             this.expectedValueBoltsNP = expectedValueBoltsNP;
 
             switch (bolt) {
                 case VALID_INSTANCE:
+                    this.basicBoltNP = mock(IBasicBolt.class);
+                    this.richBoltNP = mock(IRichBolt.class);
+                    this.statefulBoltNP = mock(IStatefulBolt.class);
+                    this.windowedBoltNP= mock(IWindowedBolt.class);
+                    this.statefulWindowedBoltNP = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBoltNP.isPersistent()).thenReturn(false);
+                    this.statefulWindowedBoltPersistentNP = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBoltPersistentNP.isPersistent()).thenReturn(true);
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.boltsIdNP = new String[]{"bolt1", "bolt2"};
+                            break;
+                        case EMPTY_STRING:
+                            this.boltsIdNP = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.boltsIdNP = new String[]{null,null};
+                            break;
+                    }
+                    break;
                 case INVALID_INSTANCE:
                     this.basicBoltNP = mock(IBasicBolt.class);
                     this.richBoltNP = mock(IRichBolt.class);
@@ -337,7 +356,19 @@ public class TopologyBuilderTests {
                     when(statefulWindowedBoltNP.isPersistent()).thenReturn(false);
                     this.statefulWindowedBoltPersistentNP = mock(IStatefulWindowedBolt.class);
                     when(statefulWindowedBoltPersistentNP.isPersistent()).thenReturn(true);
-                    break;
+
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.boltsIdNP = new String[]{"bolt", "bolt"};
+                            break;
+                        case EMPTY_STRING:
+                            this.boltsIdNP = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.boltsIdNP = new String[]{null,null};
+                            break;
+                    }
+                break;
 
                 case NULL_INSTANCE:
                     this.basicBoltNP = null;
@@ -345,11 +376,19 @@ public class TopologyBuilderTests {
                     this.statefulBoltNP = null;
                     this.statefulWindowedBoltNP = null;
                     this.statefulWindowedBoltPersistentNP = null;
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.boltsIdNP = new String[]{"bolt1", "bolt2"};
+                            break;
+                        case EMPTY_STRING:
+                            this.boltsIdNP = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.boltsIdNP = new String[]{null,null};
+                            break;
+                    }
                     break;
             }
-
-            if(bolt.equals(ParamType.VALID_INSTANCE))this.boltsIdNP = new String[]{"bolt1", "bolt2"};
-            else this.boltsIdNP = new String[]{"bolt", "bolt"};
 
         }
 
@@ -386,7 +425,7 @@ public class TopologyBuilderTests {
 
         }
 
-        private void configureSetSpoutSupplier(ParamType supplier, ParamType parallelismHint, Boolean expectedSupplier) {
+        private void configureSetSpoutSupplier(StringType stringType, ParamType supplier, ParamType parallelismHint, Boolean expectedSupplier) {
 
             this.expectedSupplier = expectedSupplier;
 
@@ -424,19 +463,50 @@ public class TopologyBuilderTests {
 
         }
 
-        private void configureSetSpout(ParamType spout, ParamType parallelismHint, Boolean expectedValueSpout) {
+        private void configureSetSpout(StringType stringType, ParamType spout, ParamType parallelismHint, Boolean expectedValueSpout) {
             this.richSpout = mock(IRichSpout.class);
             this.expectedValueSpout = expectedValueSpout;
 
             switch (spout) {
                 case VALID_INSTANCE:
-                    this.spoutsId = new String[]{"spout1", "spout2"};
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.spoutsId = new String[]{"spout1", "spout2"};
+                            break;
+                        case EMPTY_STRING:
+                            this.spoutsId = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.spoutsId = new String[]{null,null};
+                            break;
+                    }
                     break;
                 case INVALID_INSTANCE:
-                    this.spoutsId = new String[]{"spout", "spout"};
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.spoutsId = new String[]{"spout", "spout"};
+                            break;
+                        case EMPTY_STRING:
+                            this.spoutsId = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.spoutsId = new String[]{null,null};
+                            break;
+                    }
                     break;
                 case NULL_INSTANCE:
                     this.richSpout = null;
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.spoutsId = new String[]{"spout1", "spout2"};
+                            break;
+                        case EMPTY_STRING:
+                            this.spoutsId = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.spoutsId = new String[]{null,null};
+                            break;
+                    }
                     break;
             }
 
@@ -453,14 +523,12 @@ public class TopologyBuilderTests {
             }
         }
 
-        private void configureSetBolt(ParamType bolt, ParamType parallelismHint, boolean expectedValueBolts) {
+        private void configureSetBolt(StringType stringType, ParamType bolt, ParamType parallelismHint, boolean expectedValueBolts) {
 
             this.expectedValueBolts = expectedValueBolts;
 
             switch (bolt) {
                 case VALID_INSTANCE:
-                case INVALID_INSTANCE:
-                    this.boltsId = new String[]{"bolt1", "bolt2"};
                     this.basicBolt = mock(IBasicBolt.class);
                     this.richBolt = mock(IRichBolt.class);
                     this.statefulBolt = mock(IStatefulBolt.class);
@@ -470,6 +538,40 @@ public class TopologyBuilderTests {
 
                     this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
                     when(statefulWindowedBoltPersistent.isPersistent()).thenReturn(true);
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.boltsId = new String[]{"spout1", "spout2"};
+                            break;
+                        case EMPTY_STRING:
+                            this.boltsId = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.boltsId = new String[]{null,null};
+                            break;
+                    }
+                    break;
+
+                case INVALID_INSTANCE:
+                    this.basicBolt = mock(IBasicBolt.class);
+                    this.richBolt = mock(IRichBolt.class);
+                    this.statefulBolt = mock(IStatefulBolt.class);
+                    this.windowedBolt = mock(IWindowedBolt.class);
+                    this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBolt.isPersistent()).thenReturn(false);
+
+                    this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBoltPersistent.isPersistent()).thenReturn(true);
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.boltsId = new String[]{"spout", "spout"};
+                            break;
+                        case EMPTY_STRING:
+                            this.boltsId = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.boltsId = new String[]{null,null};
+                            break;
+                    }
                     break;
 
                 case NULL_INSTANCE:
@@ -478,6 +580,25 @@ public class TopologyBuilderTests {
                     this.statefulBolt = null;
                     this.statefulWindowedBolt = null;
                     this.statefulWindowedBoltPersistent = null;
+                    this.basicBolt = mock(IBasicBolt.class);
+                    this.richBolt = mock(IRichBolt.class);
+                    this.statefulBolt = mock(IStatefulBolt.class);
+                    this.windowedBolt = mock(IWindowedBolt.class);
+                    this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
+                    when(statefulWindowedBolt.isPersistent()).thenReturn(false);
+
+                    this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
+                    switch (stringType){
+                        case NO_EMPTY_STRING:
+                            this.boltsId = new String[]{"spout", "spout"};
+                            break;
+                        case EMPTY_STRING:
+                            this.boltsId = new String[]{"", ""};
+                            break;
+                        case NULL:
+                            this.boltsId = new String[]{null,null};
+                            break;
+                    }
                     break;
             }
 
@@ -493,8 +614,6 @@ public class TopologyBuilderTests {
                     break;
             }
 
-            if(bolt.equals(ParamType.VALID_INSTANCE))this.boltsId = new String[]{"bolt1", "bolt2"};
-            else this.boltsId = new String[]{"bolt", "bolt"};
         }
 
         @Parameterized.Parameters
@@ -502,51 +621,51 @@ public class TopologyBuilderTests {
 
             return Arrays.asList(new Object[][]{
                                    //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
-                    {new Object[] { ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, false},
+                    {new Object[] {StringType.NO_EMPTY_STRING, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, false},
                                          //BOLT,                    PaparallelismHint >0
-                            new Object[] {ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, false},
+                            new Object[] {StringType.NO_EMPTY_STRING,ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, false},
                             //IWorkerHook
                             new Object[] {ParamType.VALID_INSTANCE, false},
                                          //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] { ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, false},
+                            new Object[] {StringType.NO_EMPTY_STRING, ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, false},
                                         //BOLT
-                            new Object[] {ParamType.VALID_INSTANCE, false}
+                            new Object[] {StringType.NO_EMPTY_STRING,ParamType.VALID_INSTANCE, false}
                     },
 
                                     //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
-                    {new Object[] { ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
-                            //BOLT,                    PaparallelismHint >0
-                            new Object[] {ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
+                    {new Object[] {StringType.EMPTY_STRING, ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
+                                            //BOLT,                    PaparallelismHint >0
+                            new Object[] {StringType.EMPTY_STRING, ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
                             //IWorkerHook
                             new Object[] {ParamType.INVALID_INSTANCE, true},
                                          //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
+                            new Object[] {StringType.EMPTY_STRING, ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
                                           //BOLT
-                            new Object[] {ParamType.INVALID_INSTANCE, true}
+                            new Object[] {StringType.EMPTY_STRING, ParamType.INVALID_INSTANCE, true}
                     },
 
                                     //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
-                    {new Object[] { ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
+                    {new Object[] { StringType.NULL,ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
                                         //BOLT,                    PaparallelismHint >0
-                            new Object[] {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
+                            new Object[] {StringType.NULL, ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
                             //IWorkerHook
                             new Object[] {ParamType.VALID_INSTANCE, false},
                             //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] {ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
+                            new Object[] {StringType.NULL, ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, true},
                                          //BOLT
-                            new Object[] {ParamType.INVALID_INSTANCE, true}
+                            new Object[] {StringType.NULL, ParamType.INVALID_INSTANCE, true}
                     },
 
                                   //SPOUT,                   , PaparallelismHint >0,   Raise Exception?
-                    {new Object[] { ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, false},
+                    {new Object[] {StringType.NO_EMPTY_STRING, ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, false},
                             //BOLT,                    PaparallelismHint >0
-                            new Object[] {ParamType.NULL_INSTANCE, ParamType.VALID_INSTANCE, true},
+                            new Object[] {StringType.NO_EMPTY_STRING,ParamType.NULL_INSTANCE, ParamType.VALID_INSTANCE, true},
                             //IWorkerHook
                             new Object[] {ParamType.NULL_INSTANCE, true},
                             //Serializable supplier,      , PaparallelismHint >0
-                            new Object[] {ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, false},
+                            new Object[] {StringType.NO_EMPTY_STRING,ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE, false},
                                         //BOLT
-                            new Object[] {ParamType.INVALID_INSTANCE, true}
+                            new Object[] {StringType.NO_EMPTY_STRING,ParamType.INVALID_INSTANCE, true}
                     },
             });
         }
