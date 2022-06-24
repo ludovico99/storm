@@ -3,7 +3,7 @@
 
 name: CI/CD Data flow coverage (ba-dua) for Storm
 
- on:
+on:
     push:
       branches: [ master ]
     pull_request:
