@@ -1,6 +1,7 @@
 package org.apache.storm;
 
 
+import org.apache.storm.generated.StormTopology;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.utils.Utils;
@@ -8,6 +9,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 
 public class TopologyBuilderTestIT implements Serializable {
@@ -34,7 +40,11 @@ public class TopologyBuilderTestIT implements Serializable {
             conf.setMaxTaskParallelism(3);
 
             String TOPOLOGY_NAME = "TOPOLOGY";
-            cluster.submitTopology(TOPOLOGY_NAME, conf, builder.createTopology());
+
+            StormTopology stormTopology = builder.createTopology();
+
+            cluster.submitTopology(TOPOLOGY_NAME, conf, stormTopology);
+
             Utils.sleep(30000);
 
             cluster.shutdown();

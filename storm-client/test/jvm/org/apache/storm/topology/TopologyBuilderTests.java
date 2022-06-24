@@ -134,17 +134,17 @@ public class TopologyBuilderTests {
 
             return Arrays.asList(new Object[][]{
                     //SPOUT                      BOLT
-                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT},
-                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, TopologyConfigEnum.NO_STATEFUL_BOLT},
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE,   TopologyConfigEnum.STATEFUL_BOLT},
+                    {ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE,   TopologyConfigEnum.NO_STATEFUL_BOLT},
                     {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT},
-                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT},
+                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE,   TopologyConfigEnum.STATEFUL_BOLT},
                     {ParamType.VALID_INSTANCE,   ParamType.INVALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT}
 
             });
         }
 
         private IRichBolt richBolt() {
-            if (this.boltParamType.equals(ParamType.VALID_INSTANCE)) return new BaseRichBolt() {
+            if (this.boltParamType == ParamType.VALID_INSTANCE) return new BaseRichBolt() {
                 @Override
                 public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
 
@@ -173,7 +173,7 @@ public class TopologyBuilderTests {
         }
 
         private IBasicBolt basicBolt() {
-            if (this.boltParamType.equals(ParamType.VALID_INSTANCE)) return new BaseBasicBolt() {
+            if (this.boltParamType == (ParamType.VALID_INSTANCE)) return new BaseBasicBolt() {
                 @Override
                 public void execute(Tuple input, BasicOutputCollector collector) {}
 
@@ -194,7 +194,7 @@ public class TopologyBuilderTests {
         }
 
         private IStatefulBolt<?> statefulBolt() {
-            if (this.boltParamType.equals(ParamType.VALID_INSTANCE)) return new BaseStatefulBolt<State>() {
+            if (this.boltParamType == ParamType.VALID_INSTANCE) return new BaseStatefulBolt<State>() {
                 @Override
                 public void initState(State state) {}
 
@@ -215,7 +215,7 @@ public class TopologyBuilderTests {
         }
 
         private IRichSpout richSpout() {
-            if (this.spoutParamType.equals(ParamType.VALID_INSTANCE)) return new BaseRichSpout() {
+            if (this.spoutParamType == ParamType.VALID_INSTANCE) return new BaseRichSpout() {
                 @Override
                 public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
 

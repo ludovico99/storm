@@ -10,13 +10,18 @@ import org.apache.storm.tuple.Values;
 
 import java.util.Map;
 
-public class BasicBolt implements IBasicBolt {
+public class MyBasicBolt implements IBasicBolt {
+
+    public static int added;
+
     @Override
     public void prepare(Map<String, Object> topoConf, TopologyContext context) {}
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
-        collector.emit(new Values(input.getValue(0)));
+        added = 50;
+        int toSend = (int) input.getValue(0) + added;
+        collector.emit(new Values(toSend));
     }
 
     @Override
@@ -31,4 +36,5 @@ public class BasicBolt implements IBasicBolt {
     public Map<String, Object> getComponentConfiguration() {
         return null;
     }
+
 }
