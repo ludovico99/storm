@@ -123,7 +123,6 @@ public class BasicBoltExecutorSimpleTests {
 
             verify(this.mockBolt, Mockito.times(1)).getComponentConfiguration();
 
-
         }
     }
 

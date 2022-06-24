@@ -15,7 +15,7 @@ public class TopologyBuilderTestIT implements Serializable {
     private final WordCount wordCount = new WordCount();
 
     @Test
-    public void test_DistributedSum() {
+    public void test_WordCount() {
 
         try (LocalCluster cluster = new LocalCluster()) {
 
