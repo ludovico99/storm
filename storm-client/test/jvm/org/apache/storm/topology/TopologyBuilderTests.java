@@ -138,7 +138,6 @@ public class TopologyBuilderTests {
                     {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT},
                     {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE,   TopologyConfigEnum.STATEFUL_BOLT},
                     {ParamType.VALID_INSTANCE,   ParamType.INVALID_INSTANCE, TopologyConfigEnum.STATEFUL_BOLT}
-
             });
         }
 
