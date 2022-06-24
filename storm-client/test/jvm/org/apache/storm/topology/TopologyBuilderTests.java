@@ -169,7 +169,7 @@ public class TopologyBuilderTests {
                 public void declareOutputFields(OutputFieldsDeclarer declarer) {}
 
             };
-            else if (this.spoutParamType == ParamType.VALID_INSTANCE)  return new BaseRichBolt() {
+            else if (this.boltParamType == ParamType.VALID_INSTANCE)  return new BaseRichBolt() {
                     @Override
                     public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
 
@@ -195,7 +195,7 @@ public class TopologyBuilderTests {
                 public void declareOutputFields(OutputFieldsDeclarer declarer) {}
 
             };
-            else if (this.spoutParamType == ParamType.VALID_INSTANCE)  {
+            else if (this.boltParamType == ParamType.VALID_INSTANCE)  {
                 return new BaseBasicBolt() {
                     @Override
                     public void execute(Tuple input, BasicOutputCollector collector) {}
@@ -218,7 +218,7 @@ public class TopologyBuilderTests {
                 public void execute(Tuple input) {}
 
             };
-            else if (this.spoutParamType == ParamType.VALID_INSTANCE)  {
+            else if (this.boltParamType == ParamType.VALID_INSTANCE)  {
                 return new BaseStatefulBolt<State>() {
                     @Override
                     public void initState(State state) {}
@@ -234,6 +234,12 @@ public class TopologyBuilderTests {
 
         private IRichSpout richSpout() {
             if (this.spoutParamType == ParamType.INVALID_INSTANCE) return new BaseRichSpout() {
+
+                private String string;
+
+                public void BaseRichSpout (){
+                    this.string = "NOT_SERIALIZABLE";
+                }
                 @Override
                 public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
 
@@ -241,11 +247,13 @@ public class TopologyBuilderTests {
                 public void nextTuple() {}
 
                 @Override
-                public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
+                public void declareOutputFields(OutputFieldsDeclarer declarer) {
+                }
             };
-            else if (this.spoutParamType == ParamType.VALID_INSTANCE)  {
+
+            else if (this.spoutParamType == ParamType.VALID_INSTANCE)
                 return new BaseRichSpout() {
+
                     @Override
                     public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
 
@@ -257,7 +265,7 @@ public class TopologyBuilderTests {
 
                     private void writeObject(java.io.ObjectOutputStream stream) {}
                 };
-            }
+
             else return null;
         }
 

@@ -228,10 +228,11 @@
 	
 	
 	<profiles>
-	 <profile>
-  
 	<!-- profilo per eseguire l'analisi con ba-dua nel sottomodulo bookkeeper server -->
-      <id>ba-dua-coverageProfile</id>
+	 <!-- <profile>
+  
+	
+     <id>ba-dua-coverageProfile</id>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
@@ -254,9 +255,7 @@
               <argLine>-javaagent:${project.basedir}/../ba-dua-jars/ba-dua-agent-rt-0.6.0-all.jar -Doutput.file=target/badua.ser</argLine>
           </configuration>
           </plugin>
-		
-		
-          <!-- Generate report in xml format -->
+	
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
@@ -270,7 +269,6 @@
                 <phase>verify</phase>
                 <configuration>
                   <workingDirectory>${project.basedir}</workingDirectory>
-                  <!--<executable>${project.basedir}/../ba-dua-jars/cli-commands-report.sh</executable>-->
                             <executable>java</executable>
                             <arguments>
                                         <argument>-jar</argument>
@@ -291,7 +289,7 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
+    </profile> -->
 	
 	<profile>
       <id>mutation-testingProfile</id>
