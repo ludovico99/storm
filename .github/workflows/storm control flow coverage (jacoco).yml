@@ -53,5 +53,5 @@ jobs:
       - name: Upload jacoco report
         uses: actions/upload-artifact@v3
         with:
-         name: jacoco.html
-         path: storm-aggregate-coverage/target/site/jacoco-aggregate/index.html
+         name: jacoco
+         path: storm-aggregate-coverage/target/site/jacoco-aggregate
