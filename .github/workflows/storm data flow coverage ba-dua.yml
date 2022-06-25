@@ -47,4 +47,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
          name: badua.xml
-         path: storm-server/target/badua.xml
+         path: storm-client/target/badua.xml
