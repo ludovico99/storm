@@ -32,6 +32,7 @@ public class BasicBoltExecutorSimpleTests {
 
 
     private boolean exceptionInConfigPhase = false;
+    private OutputFieldsDeclarer outputFieldsDeclarer;
 
     public BasicBoltExecutorSimpleTests(String componentId, String streamId,BasicBoltExecutorEnum basicBoltExecutorEnum) {
 
@@ -44,11 +45,13 @@ public class BasicBoltExecutorSimpleTests {
         this.streamId = streamId;
         this.boltExecutorEnum = basicBoltExecutorEnum;
         try {
-            this.mockBolt = Mockito.mock(IBasicBolt.class);
+            this.mockBolt = mock(IBasicBolt.class);
 
             this.executor = spy(new BasicBoltExecutor(mockBolt));
 
-            this.outputCollector = Mockito.mock(OutputCollector.class);
+            this.outputCollector = mock(OutputCollector.class);
+
+            this.outputFieldsDeclarer = mock(OutputFieldsDeclarer.class);
 
             switch (basicBoltExecutorEnum){
                 case NO_ACK_FAILED:
@@ -60,6 +63,8 @@ public class BasicBoltExecutorSimpleTests {
 
 
             this.topoConf = new HashMap<>();
+            this.topoConf.put("bolt-1","fields");
+            when(mockBolt.getComponentConfiguration()).thenReturn(this.topoConf);
 
             TopologyContext context = Mockito.mock(TopologyContext.class);
 
@@ -83,13 +88,13 @@ public class BasicBoltExecutorSimpleTests {
 
         return Arrays.asList(new Object[][] {
                 //Component ID,         StreamID
-                {"bolt",            "stream-1", BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {"bolt",            "",         BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {"bolt",            null,       BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {"",           "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {null,         "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
+                {"bolt",            "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
+                {"bolt",            "",              BasicBoltExecutorEnum.NO_ACK_FAILED},
+                {"bolt",            null,            BasicBoltExecutorEnum.NO_ACK_FAILED},
+                {"",                "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
+                {null,              "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
 
-                {"bolt",            "stream-1", BasicBoltExecutorEnum.ACK_FAILED},
+                {"bolt",            "stream-1",      BasicBoltExecutorEnum.ACK_FAILED},
 
         });
     }
@@ -153,9 +158,24 @@ public class BasicBoltExecutorSimpleTests {
                     " been thrown.", true);
         } else {
 
+
             Assert.assertEquals(this.topoConf, this.executor.getComponentConfiguration());
 
             verify(this.mockBolt, Mockito.times(1)).getComponentConfiguration();
+
+        }
+    }
+
+    @Test
+    public void test_DeclareOutputFields() {
+        if (this.exceptionInConfigPhase) {
+            Assert.assertTrue("No exception was expected, but an exception during the set up of the test case has" +
+                    " been thrown.", true);
+        } else {
+
+            this.executor.declareOutputFields(this.outputFieldsDeclarer);
+
+            verify(this.mockBolt, Mockito.times(1)).declareOutputFields(this.outputFieldsDeclarer);
 
         }
     }

@@ -751,8 +751,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetRichBolt() {
             try {
-                topologyBuilder.setBolt(this.boltsId[0], this.richBolt, this.parallelismHintBolts);
-                topologyBuilder.setBolt(this.boltsId[1], this.richBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsId[0], this.richBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsId[1], this.richBolt, this.parallelismHintBolts);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -764,8 +766,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetRichBoltNoParallelismHint() {
             try {
-                topologyBuilder.setBolt(this.boltsIdNP[0], this.richBoltNP);
-                topologyBuilder.setBolt(this.boltsIdNP[1], this.richBoltNP);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsIdNP[0], this.richBoltNP);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsIdNP[1], this.richBoltNP);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -777,8 +781,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetBasicBoltNoParallelismHint() {
             try {
-                topologyBuilder.setBolt(this.boltsIdNP[0], this.basicBoltNP);
-                topologyBuilder.setBolt(this.boltsIdNP[1], this.basicBoltNP);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsIdNP[0], this.basicBoltNP);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsIdNP[1], this.basicBoltNP);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -791,8 +797,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetStatefulBoltNoParallelismHint() {
             try {
-                topologyBuilder.setBolt(this.boltsIdNP[0], this.statefulBoltNP);
-                topologyBuilder.setBolt(this.boltsIdNP[1], this.statefulBoltNP);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsIdNP[0], this.statefulBoltNP);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsIdNP[1], this.statefulBoltNP);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -804,8 +812,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetStatefulWindowedBoltNoParallelismHint() {
             try {
-                topologyBuilder.setBolt(this.boltsIdNP[0], this.statefulWindowedBoltNP);
-                topologyBuilder.setBolt(this.boltsIdNP[1], this.statefulWindowedBoltNP);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsIdNP[0], this.statefulWindowedBoltNP);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsIdNP[1], this.statefulWindowedBoltNP);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -817,8 +827,10 @@ public class TopologyBuilderTests {
         @Test
         public void testWindowedBoltNoParallelismHint() {
             try {
-                topologyBuilder.setBolt(this.boltsIdNP[0], this.windowedBoltNP);
-                topologyBuilder.setBolt(this.boltsIdNP[1], this.windowedBoltNP);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsIdNP[0], this.windowedBoltNP);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsIdNP[1], this.windowedBoltNP);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -829,8 +841,10 @@ public class TopologyBuilderTests {
         @Test
         public void testWindowedBolt() {
             try {
-                topologyBuilder.setBolt(this.boltsId[0], this.windowedBolt, this.parallelismHintBolts);
-                topologyBuilder.setBolt(this.boltsId[1], this.windowedBolt,this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsId[0], this.windowedBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsId[1], this.windowedBolt,this.parallelismHintBolts);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -843,8 +857,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetBasicBolt() {
             try {
-                topologyBuilder.setBolt(this.boltsId[0], this.basicBolt, this.parallelismHintBolts);
-                topologyBuilder.setBolt(this.boltsId[1], this.basicBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsId[0], this.basicBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsId[1], this.basicBolt, this.parallelismHintBolts);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -856,8 +872,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetStatefulBolt() {
             try {
-                topologyBuilder.setBolt(this.boltsId[0], this.statefulBolt, this.parallelismHintBolts);
-                topologyBuilder.setBolt(this.boltsId[1], this.statefulBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsId[0], this.statefulBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsId[1], this.statefulBolt, this.parallelismHintBolts);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -868,8 +886,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetStatefulWindowedBolt() {
             try {
-                topologyBuilder.setBolt(this.boltsId[0], this.statefulWindowedBolt, this.parallelismHintBolts);
-                topologyBuilder.setBolt(this.boltsId[1], this.statefulWindowedBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsId[0], this.statefulWindowedBolt, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer2 = topologyBuilder.setBolt(this.boltsId[1], this.statefulWindowedBolt, this.parallelismHintBolts);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -880,8 +900,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetStatefulWindowedBoltPersistent() {
             try {
-                topologyBuilder.setBolt(this.boltsId[0], this.statefulWindowedBoltPersistent, this.parallelismHintBolts);
-                topologyBuilder.setBolt(this.boltsId[1], this.statefulWindowedBoltPersistent, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer1 = topologyBuilder.setBolt(this.boltsId[0], this.statefulWindowedBoltPersistent, this.parallelismHintBolts);
+                BoltDeclarer boltDeclarer2 =  topologyBuilder.setBolt(this.boltsId[1], this.statefulWindowedBoltPersistent, this.parallelismHintBolts);
+                Assert.assertNotNull(boltDeclarer1);
+                Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -892,8 +914,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetSpout() {
             try {
-                topologyBuilder.setSpout(this.spoutsId[0], this.richSpout, this.parallelismHintSpout);
-                topologyBuilder.setSpout(this.spoutsId[1], this.richSpout, this.parallelismHintSpout);
+                SpoutDeclarer spoutDeclarer1 = topologyBuilder.setSpout(this.spoutsId[0], this.richSpout, this.parallelismHintSpout);
+                SpoutDeclarer spoutDeclarer2 = topologyBuilder.setSpout(this.spoutsId[1], this.richSpout, this.parallelismHintSpout);
+                Assert.assertNotNull(spoutDeclarer1);
+                Assert.assertNotNull(spoutDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueSpout);
 
             } catch (Exception e) {
@@ -905,8 +929,10 @@ public class TopologyBuilderTests {
         @Test
         public void testSetSpoutSupplier() {
             try {
-                topologyBuilder.setSpout(this.spoutsId[0], this.supplier, this.parallelismHintSpoutSupplier);
-                topologyBuilder.setSpout(this.spoutsId[1], this.supplier, this.parallelismHintSpoutSupplier);
+                SpoutDeclarer spoutDeclarer1 = topologyBuilder.setSpout(this.spoutsId[0], this.supplier, this.parallelismHintSpoutSupplier);
+                SpoutDeclarer spoutDeclarer2 = topologyBuilder.setSpout(this.spoutsId[1], this.supplier, this.parallelismHintSpoutSupplier);
+                Assert.assertNotNull(spoutDeclarer1);
+                Assert.assertNotNull(spoutDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedSupplier);
             } catch (Exception e) {
                 e.printStackTrace();
