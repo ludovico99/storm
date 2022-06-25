@@ -5,16 +5,7 @@ import org.apache.storm.generated.StormTopology;
 import org.apache.storm.hooks.IWorkerHook;
 import org.apache.storm.lambda.SerializableSupplier;
 import org.apache.storm.shade.com.google.common.collect.ImmutableSet;
-import org.apache.storm.spout.SpoutOutputCollector;
-import org.apache.storm.state.State;
-import org.apache.storm.task.OutputCollector;
-import org.apache.storm.task.TopologyContext;
 import org.apache.storm.task.WorkerTopologyContext;
-import org.apache.storm.topology.base.BaseBasicBolt;
-import org.apache.storm.topology.base.BaseRichBolt;
-import org.apache.storm.topology.base.BaseRichSpout;
-import org.apache.storm.topology.base.BaseStatefulBolt;
-import org.apache.storm.tuple.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +18,6 @@ import java.util.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 @RunWith(value = Enclosed.class)
@@ -36,9 +26,8 @@ public class TopologyBuilderTests {
     @RunWith(Parameterized.class)
     public static class TestTopologyCreation {
         private TopologyBuilder topologyBuilder;
-        private ParamType boltParamType;
-        private ParamType spoutParamType;
         private boolean expectedException = false;
+        private final Utils utils= new Utils();
         private Object expectedSpoutsSet;
         private List<ImmutableSet<GlobalStreamId>> expectedBoltsSet;
         private boolean exceptionInConfigPhase = false;
@@ -51,8 +40,6 @@ public class TopologyBuilderTests {
 
         private void configure(ParamType spout, ParamType bolt, TopologyConfigEnum topologyConfig) {
             this.topologyBuilder = new TopologyBuilder();
-            this.boltParamType = bolt;
-            this.spoutParamType = spout;
 
             try {
                 switch (spout) {
@@ -80,13 +67,13 @@ public class TopologyBuilderTests {
                 String spouts = "spout1";
                 switch (topologyConfig) {
                     case STATEFUL_BOLT:
-                        this.topologyBuilder.setSpout(spouts, richSpout());
+                        this.topologyBuilder.setSpout(spouts, utils.richSpout(spout));
 
-                        this.topologyBuilder.setBolt(bolts[0], richBolt(), 1)
+                        this.topologyBuilder.setBolt(bolts[0], utils.richBolt(bolt), 1)
                                 .shuffleGrouping(spouts);
-                        this.topologyBuilder.setBolt(bolts[1], statefulBolt(), 1)
+                        this.topologyBuilder.setBolt(bolts[1], utils.statefulBolt(bolt), 1)
                                 .shuffleGrouping(bolts[0]);
-                        this.topologyBuilder.setBolt(bolts[2], basicBolt(), 1)
+                        this.topologyBuilder.setBolt(bolts[2], utils.basicBolt(bolt), 1)
                                 .shuffleGrouping(bolts[1]).shuffleGrouping(spouts);
 
                         this.expectedSpoutsSet = ImmutableSet.of(spouts,"$checkpointspout");
@@ -107,13 +94,13 @@ public class TopologyBuilderTests {
 
                         break;
                     case NO_STATEFUL_BOLT:
-                        this.topologyBuilder.setSpout(spouts, richSpout());
+                        this.topologyBuilder.setSpout(spouts, utils.richSpout(spout));
 
-                        this.topologyBuilder.setBolt(bolts[0], richBolt(), 1)
+                        this.topologyBuilder.setBolt(bolts[0], utils.richBolt(bolt), 1)
                                 .shuffleGrouping(spouts);
-                        this.topologyBuilder.setBolt(bolts[1], richBolt(), 1)
+                        this.topologyBuilder.setBolt(bolts[1], utils.richBolt(bolt), 1)
                                 .shuffleGrouping(bolts[0]);
-                        this.topologyBuilder.setBolt(bolts[2], basicBolt(), 1)
+                        this.topologyBuilder.setBolt(bolts[2], utils.basicBolt(bolt), 1)
                                 .shuffleGrouping(bolts[1]).shuffleGrouping(spouts);
 
                         this.expectedSpoutsSet = ImmutableSet.of(spouts);
@@ -157,117 +144,7 @@ public class TopologyBuilderTests {
             });
         }
 
-        private IRichBolt richBolt() {
-            if (this.boltParamType == ParamType.INVALID_INSTANCE) return new BaseRichBolt() {
-                @Override
-                public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
 
-                @Override
-                public void execute(Tuple input) {}
-
-                @Override
-                public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-            };
-            else if (this.boltParamType == ParamType.VALID_INSTANCE)  return new BaseRichBolt() {
-                    @Override
-                    public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {}
-
-                    @Override
-                    public void execute(Tuple input) {}
-
-                    @Override
-                    public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-                    private void writeObject(java.io.ObjectOutputStream stream) {}
-
-                };
-            else return null;
-
-        }
-
-        private IBasicBolt basicBolt() {
-            if (this.boltParamType ==ParamType.INVALID_INSTANCE) return new BaseBasicBolt() {
-                @Override
-                public void execute(Tuple input, BasicOutputCollector collector) {}
-
-                @Override
-                public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-            };
-            else if (this.boltParamType == ParamType.VALID_INSTANCE)  {
-                return new BaseBasicBolt() {
-                    @Override
-                    public void execute(Tuple input, BasicOutputCollector collector) {}
-
-                    @Override
-                    public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-                    private void writeObject(java.io.ObjectOutputStream stream) {}
-                };
-            }
-            else return null;
-        }
-
-        private IStatefulBolt<?> statefulBolt() {
-            if (this.boltParamType == ParamType.INVALID_INSTANCE) return new BaseStatefulBolt<State>() {
-                @Override
-                public void initState(State state) {}
-
-                @Override
-                public void execute(Tuple input) {}
-
-            };
-            else if (this.boltParamType == ParamType.VALID_INSTANCE)  {
-                return new BaseStatefulBolt<State>() {
-                    @Override
-                    public void initState(State state) {}
-
-                    @Override
-                    public void execute(Tuple input) {}
-
-                    private void writeObject(java.io.ObjectOutputStream stream) {}
-                };
-            }
-            else return null;
-        }
-
-        private IRichSpout richSpout() {
-            if (this.spoutParamType == ParamType.INVALID_INSTANCE) return new BaseRichSpout() {
-
-                private String string;
-
-                public void BaseRichSpout (){
-                    this.string = "NOT_SERIALIZABLE";
-                }
-                @Override
-                public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
-
-                @Override
-                public void nextTuple() {}
-
-                @Override
-                public void declareOutputFields(OutputFieldsDeclarer declarer) {
-                }
-            };
-
-            else if (this.spoutParamType == ParamType.VALID_INSTANCE)
-                return new BaseRichSpout() {
-
-                    @Override
-                    public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {}
-
-                    @Override
-                    public void nextTuple() {}
-
-                    @Override
-                    public void declareOutputFields(OutputFieldsDeclarer declarer) {}
-
-                    private void writeObject(java.io.ObjectOutputStream stream) {}
-                };
-
-            else return null;
-        }
 
 
         @Test
@@ -335,6 +212,7 @@ public class TopologyBuilderTests {
 
         private IWorkerHook workerHook;
         private boolean expectedWorkerHook;
+        private Utils utils = new Utils();
 
         private String[] boltsIdNP;
         private IBasicBolt basicBoltNP;
@@ -364,16 +242,16 @@ public class TopologyBuilderTests {
         private void configureNoParallelism(StringType stringType, ParamType bolt, Boolean expectedValueBoltsNP) {
             this.expectedValueBoltsNP = expectedValueBoltsNP;
 
+
+            this.basicBoltNP = utils.basicBolt(bolt);
+            this.richBoltNP = utils.richBolt(bolt);
+            this.statefulBoltNP = utils.statefulBolt(bolt);
+            this.windowedBoltNP= utils.windowedBolt(bolt);
+            this.statefulWindowedBoltNP = utils.statefulWindowedBolt(bolt);
+            this.statefulWindowedBoltPersistentNP = utils.statefulWindowedBolt(bolt);
+
             switch (bolt) {
                 case VALID_INSTANCE:
-                    this.basicBoltNP = mock(IBasicBolt.class);
-                    this.richBoltNP = mock(IRichBolt.class);
-                    this.statefulBoltNP = mock(IStatefulBolt.class);
-                    this.windowedBoltNP= mock(IWindowedBolt.class);
-                    this.statefulWindowedBoltNP = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBoltNP.isPersistent()).thenReturn(false);
-                    this.statefulWindowedBoltPersistentNP = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBoltPersistentNP.isPersistent()).thenReturn(true);
                     switch (stringType){
                         case NO_EMPTY_STRING:
                             this.boltsIdNP = new String[]{"bolt1", "bolt2"};
@@ -387,15 +265,6 @@ public class TopologyBuilderTests {
                     }
                     break;
                 case INVALID_INSTANCE:
-                    this.basicBoltNP = mock(IBasicBolt.class);
-                    this.richBoltNP = mock(IRichBolt.class);
-                    this.statefulBoltNP = mock(IStatefulBolt.class);
-                    this.windowedBoltNP=mock(IWindowedBolt.class);
-                    this.statefulWindowedBoltNP = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBoltNP.isPersistent()).thenReturn(false);
-                    this.statefulWindowedBoltPersistentNP = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBoltPersistentNP.isPersistent()).thenReturn(true);
-
                     switch (stringType){
                         case NO_EMPTY_STRING:
                             this.boltsIdNP = new String[]{"bolt", "bolt"};
@@ -536,7 +405,7 @@ public class TopologyBuilderTests {
         }
 
         private void configureSetSpout(StringType stringType, ParamType spout, ParamType parallelismHint, Boolean expectedValueSpout) {
-            this.richSpout = mock(IRichSpout.class);
+            this.richSpout = utils.richSpout(spout);
             this.expectedValueSpout = expectedValueSpout;
 
             switch (spout) {
@@ -599,17 +468,15 @@ public class TopologyBuilderTests {
 
             this.expectedValueBolts = expectedValueBolts;
 
+            this.basicBolt = utils.basicBolt(bolt);
+            this.richBolt = utils.richBolt(bolt);
+            this.statefulBolt = utils.statefulBolt(bolt);
+            this.windowedBolt= utils.windowedBolt(bolt);
+            this.statefulWindowedBolt = utils.statefulWindowedBolt(bolt);
+            this.statefulWindowedBoltPersistent = utils.statefulWindowedBolt(bolt);
+
             switch (bolt) {
                 case VALID_INSTANCE:
-                    this.basicBolt = mock(IBasicBolt.class);
-                    this.richBolt = mock(IRichBolt.class);
-                    this.statefulBolt = mock(IStatefulBolt.class);
-                    this.windowedBolt = mock(IWindowedBolt.class);
-                    this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBolt.isPersistent()).thenReturn(false);
-
-                    this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBoltPersistent.isPersistent()).thenReturn(true);
                     switch (stringType){
                         case NO_EMPTY_STRING:
                             this.boltsId = new String[]{"spout1", "spout2"};
@@ -624,15 +491,6 @@ public class TopologyBuilderTests {
                     break;
 
                 case INVALID_INSTANCE:
-                    this.basicBolt = mock(IBasicBolt.class);
-                    this.richBolt = mock(IRichBolt.class);
-                    this.statefulBolt = mock(IStatefulBolt.class);
-                    this.windowedBolt = mock(IWindowedBolt.class);
-                    this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBolt.isPersistent()).thenReturn(false);
-
-                    this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBoltPersistent.isPersistent()).thenReturn(true);
                     switch (stringType){
                         case NO_EMPTY_STRING:
                             this.boltsId = new String[]{"spout", "spout"};
@@ -652,14 +510,6 @@ public class TopologyBuilderTests {
                     this.statefulBolt = null;
                     this.statefulWindowedBolt = null;
                     this.statefulWindowedBoltPersistent = null;
-                    this.basicBolt = mock(IBasicBolt.class);
-                    this.richBolt = mock(IRichBolt.class);
-                    this.statefulBolt = mock(IStatefulBolt.class);
-                    this.windowedBolt = mock(IWindowedBolt.class);
-                    this.statefulWindowedBolt = mock(IStatefulWindowedBolt.class);
-                    when(statefulWindowedBolt.isPersistent()).thenReturn(false);
-
-                    this.statefulWindowedBoltPersistent = mock(IStatefulWindowedBolt.class);
                     switch (stringType){
                         case NO_EMPTY_STRING:
                             this.boltsId = new String[]{"spout", "spout"};
@@ -756,6 +606,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBolts);
@@ -771,8 +626,12 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsIdNP[1]).get_common().get_inputs().keySet());
             } catch (Exception e) {
-                
+
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
             }
@@ -787,6 +646,12 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsIdNP[1]).get_common().get_inputs().keySet());
+
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
@@ -803,6 +668,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsIdNP[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
@@ -818,6 +688,10 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsIdNP[1]).get_common().get_inputs().keySet());
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
@@ -833,6 +707,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsIdNP[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
@@ -847,6 +726,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBolts);
@@ -863,6 +747,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBolts);
@@ -878,6 +767,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBolts);
@@ -892,6 +786,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBolts);
@@ -906,6 +805,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer1);
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBolts);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_bolts().get(this.boltsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBolts);
@@ -921,6 +825,10 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(spoutDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueSpout);
 
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_spouts().get(this.spoutsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueSpout);
@@ -935,6 +843,11 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(spoutDeclarer1);
                 Assert.assertNotNull(spoutDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedSupplier);
+
+                StormTopology stormTopology = this.topologyBuilder.createTopology();
+                Assert.assertEquals(emptySet(),
+                        stormTopology.get_spouts().get(this.spoutsId[1]).get_common().get_inputs().keySet());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedSupplier);
@@ -953,5 +866,7 @@ public class TopologyBuilderTests {
             }
         }
     }
+
+
 
 }
