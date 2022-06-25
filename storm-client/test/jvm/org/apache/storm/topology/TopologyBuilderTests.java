@@ -772,6 +772,7 @@ public class TopologyBuilderTests {
                 Assert.assertNotNull(boltDeclarer2);
                 Assert.assertFalse("No exception was expected", this.expectedValueBoltsNP);
             } catch (Exception e) {
+                
                 e.printStackTrace();
                 Assert.assertTrue("An exception is expected", this.expectedValueBoltsNP);
             }
