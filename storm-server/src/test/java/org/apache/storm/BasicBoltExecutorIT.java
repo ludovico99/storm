@@ -1,29 +1,17 @@
 package org.apache.storm;
 
-import org.apache.storm.executor.bolt.BoltExecutor;
-import org.apache.storm.generated.Bolt;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.topology.*;
-import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
-import org.apache.storm.tuple.Tuple;
 import org.apache.storm.utils.Utils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
-
-import java.lang.management.MemoryType;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.mockito.Mockito.*;
 
 public class BasicBoltExecutorIT {
 
 
     @Test
-    public void testHandleTuple() {
+    public void test_BasicBoltExecutor() {
         try (LocalCluster cluster = new LocalCluster()) {
 
             TopologyBuilder builder = new TopologyBuilder();

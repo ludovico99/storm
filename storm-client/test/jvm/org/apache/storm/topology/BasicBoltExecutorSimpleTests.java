@@ -62,7 +62,7 @@ public class BasicBoltExecutorSimpleTests {
             this.topoConf = new HashMap<>();
 
             TopologyContext context = Mockito.mock(TopologyContext.class);
-            
+
             when(context.getThisTaskId()).thenReturn(1);
             GlobalStreamId globalStreamId = new GlobalStreamId(componentId, streamId);
             Map<GlobalStreamId, Grouping> thisSources = Collections.singletonMap(globalStreamId, mock(Grouping.class));

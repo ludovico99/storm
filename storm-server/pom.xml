@@ -291,7 +291,7 @@
       </build>
     </profile> -->
 	
-	<profile>
+<!--	<profile>
       <id>mutation-testingProfile</id>
       <activation>
         <activeByDefault>false</activeByDefault>
@@ -329,7 +329,7 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
+    </profile> -->
 	
 	</profiles>
 	

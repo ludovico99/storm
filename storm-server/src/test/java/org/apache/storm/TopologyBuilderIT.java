@@ -9,14 +9,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 
-public class TopologyBuilderTestIT implements Serializable {
+public class TopologyBuilderIT implements Serializable {
 
     private final WordCount wordCount = new WordCount();
 
