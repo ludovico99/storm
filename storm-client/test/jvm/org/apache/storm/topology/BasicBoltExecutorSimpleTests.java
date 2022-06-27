@@ -22,80 +22,190 @@ import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
 public class BasicBoltExecutorSimpleTests {
-    private BasicBoltExecutor executor;
-    private IBasicBolt mockBolt;
+    private final BasicBoltExecutor executor;
+    private final IBasicBolt mockBolt;
     private Map<String, Object> topoConf;
-    private String componentId;
-    private String streamId;
     private BasicBoltExecutorEnum boltExecutorEnum;
-    private OutputCollector outputCollector;
+    private final OutputCollector outputCollector;
+
+    //Execute
+    private Tuple expectedExecute;
+    private ParamType tupleParamType;
+    private String tupleStreamId;
+
+    //Prepare
+    private String expectedPrepareComponent;
+    private String expectedPrepareStream;
+    private String componentId = "bolt - 1";
+    private String streamId = "stream - 1";
+    private ParamType componentIdParamType;
+    private ParamType streamIdParamType ;
+
+    //Declare
+    private OutputFieldsDeclarer expectedDeclare;
+    private ParamType declareParamType;
 
 
     private boolean exceptionInConfigPhase = false;
-    private OutputFieldsDeclarer outputFieldsDeclarer;
 
-    public BasicBoltExecutorSimpleTests(String componentId, String streamId,BasicBoltExecutorEnum basicBoltExecutorEnum) {
 
-        configure(componentId,streamId, basicBoltExecutorEnum);
+
+    public BasicBoltExecutorSimpleTests(Object[] executeTest, Object[] prepareTest, Object[] declareOutputFieldTest) {
+        this.mockBolt = mock(IBasicBolt.class);
+
+        this.executor = spy(new BasicBoltExecutor(mockBolt));
+
+        this.outputCollector = mock(OutputCollector.class);
+
+        configurePrepare((ParamType) prepareTest[0], (ParamType) prepareTest[1]);
+
+        configureExecute((ParamType) executeTest[0], (BasicBoltExecutorEnum) executeTest[1]);
+
+        configureDeclareOutputField((ParamType) declareOutputFieldTest[0]);
+
+        configureGetComponentConfiguration();
     }
 
-    private void configure(String componentId, String streamId, BasicBoltExecutorEnum basicBoltExecutorEnum) {
+    private void configureDeclareOutputField(ParamType declare) {
 
-        this.componentId = componentId;
-        this.streamId = streamId;
-        this.boltExecutorEnum = basicBoltExecutorEnum;
+        OutputFieldsDeclarer outputFieldsDeclarer = mock(OutputFieldsDeclarer.class);
+        this.declareParamType = declare;
+
+        switch (declare) {
+            case VALID_INSTANCE:
+                this.expectedDeclare = outputFieldsDeclarer;
+                break;
+            case INVALID_INSTANCE:
+                this.expectedDeclare = mock(OutputFieldsDeclarer.class);
+                break;
+        }
+
+        this.executor.declareOutputFields(outputFieldsDeclarer);
+
+    }
+
+    private void configureExecute(ParamType tuple, BasicBoltExecutorEnum conf) {
+
+
+        this.boltExecutorEnum = conf;
+        this.tupleParamType = tuple;
+        this.tupleStreamId = "default";
+
+        Tuple mockTuple = Mockito.mock(Tuple.class);
+        when(mockTuple.getSourceStreamId()).thenReturn(this.tupleStreamId);
+
+        switch (tuple) {
+            case VALID_INSTANCE:
+                this.expectedExecute = mockTuple;
+                break;
+            case INVALID_INSTANCE:
+                this.expectedExecute = mock(Tuple.class);
+                break;
+
+        }
+
+        switch (conf) {
+            case NO_ACK_FAILED:
+                break;
+            case ACK_FAILED:
+                doThrow(new ReportedFailedException()).when(outputCollector).ack(isA(Tuple.class));
+                break;
+        }
+
+        this.executor.execute(mockTuple);
+
+    }
+
+    private void configurePrepare(ParamType componentId, ParamType streamId) {
+
+        this.componentIdParamType = componentId;
+        this.streamIdParamType = streamId;
+
         try {
-            this.mockBolt = mock(IBasicBolt.class);
 
-            this.executor = spy(new BasicBoltExecutor(mockBolt));
-
-            this.outputCollector = mock(OutputCollector.class);
-
-            this.outputFieldsDeclarer = mock(OutputFieldsDeclarer.class);
-
-            switch (basicBoltExecutorEnum){
-                case NO_ACK_FAILED:
+            switch (componentId){
+                case VALID_INSTANCE:
+                    this.expectedPrepareComponent = this.componentId;
                     break;
-                case ACK_FAILED:
-                    doThrow(new ReportedFailedException()).when(outputCollector).ack(isA(Tuple.class));
+                case INVALID_INSTANCE:
+                    this.expectedPrepareComponent = "another component ID";
                     break;
             }
 
+            switch (streamId){
+                case VALID_INSTANCE:
+                    this.expectedPrepareStream = this.streamId;
+                    break;
+                case INVALID_INSTANCE:
+                    this.expectedPrepareStream = "another stream";
+                    break;
+            }
 
             this.topoConf = new HashMap<>();
-            this.topoConf.put("bolt-1","fields");
-            when(mockBolt.getComponentConfiguration()).thenReturn(this.topoConf);
 
             TopologyContext context = Mockito.mock(TopologyContext.class);
 
             when(context.getThisTaskId()).thenReturn(1);
-            GlobalStreamId globalStreamId = new GlobalStreamId(componentId, streamId);
+            GlobalStreamId globalStreamId = new GlobalStreamId(this.componentId, this.streamId);
             Map<GlobalStreamId, Grouping> thisSources = Collections.singletonMap(globalStreamId, mock(Grouping.class));
             when(context.getThisSources()).thenReturn(thisSources);
             when(context.getComponentTasks(any())).thenReturn(Collections.singletonList(1));
-            when(context.getThisComponentId()).thenReturn(componentId);
+            when(context.getThisComponentId()).thenReturn(this.componentId);
 
             this.executor.prepare(topoConf, context, outputCollector);
 
-        }catch (Exception e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
-            //this.exceptionInConfigPhase = true;
+            this.exceptionInConfigPhase = true;
         }
     }
+
+    public void configureGetComponentConfiguration() {
+
+        this.topoConf.put("bolt-1", "fields");
+        when(mockBolt.getComponentConfiguration()).thenReturn(this.topoConf);
+
+
+    }
+
 
     @Parameterized.Parameters
     public static Collection<Object[]> getParameters() {
 
-        return Arrays.asList(new Object[][] {
-                //Component ID,         StreamID
-                {"bolt",            "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {"bolt",            "",              BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {"bolt",            null,            BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {"",                "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
-                {null,              "stream-1",      BasicBoltExecutorEnum.NO_ACK_FAILED},
+        return Arrays.asList(new Object[][]{
+                {
+                        // tuple ,             Config
+                        new Object[]{ParamType.VALID_INSTANCE, BasicBoltExecutorEnum.NO_ACK_FAILED},
+                        //ComponentId, stream Id
+                        new Object[]{ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE},
+                        //Declare outputField
+                        new Object[]{ParamType.VALID_INSTANCE},
 
-                {"bolt",            "stream-1",      BasicBoltExecutorEnum.ACK_FAILED},
+                },
 
+                {
+                        new Object[]{ParamType.INVALID_INSTANCE, BasicBoltExecutorEnum.NO_ACK_FAILED},
+
+                        new Object[]{ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE},
+
+                        new Object[]{ParamType.INVALID_INSTANCE}
+                },
+                {
+                        new Object[]{ParamType.INVALID_INSTANCE, BasicBoltExecutorEnum.ACK_FAILED},
+                        //ComponentId, stream Id
+                        new Object[]{ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE},
+                        //Declare outputField
+                        new Object[]{ParamType.VALID_INSTANCE}
+                },
+                {
+                        new Object[]{ParamType.VALID_INSTANCE, BasicBoltExecutorEnum.ACK_FAILED},
+                        //ComponentId, stream Id
+                        new Object[]{ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE},
+                        //Declare outputField
+                        new Object[]{ParamType.VALID_INSTANCE}
+
+                }
         });
     }
 
@@ -106,16 +216,19 @@ public class BasicBoltExecutorSimpleTests {
             Assert.assertTrue("No exception was expected, but an exception during the set up of the test case has" +
                     " been thrown.", true);
         } else {
-            Tuple mockTuple = Mockito.mock(Tuple.class);
-            when(mockTuple.getSourceStreamId()).thenReturn(this.streamId);
-            this.executor.execute(mockTuple);
+
 
             ArgumentCaptor<Tuple> argument = ArgumentCaptor.forClass(Tuple.class);
             verify(this.mockBolt).execute(argument.capture(), isA(BasicOutputCollector.class));
-            Assert.assertEquals(mockTuple, argument.getValue());
-            Assert.assertEquals(this.streamId,argument.getValue().getSourceStreamId());
 
-            if(this.boltExecutorEnum == BasicBoltExecutorEnum.ACK_FAILED) {
+            if (tupleParamType == ParamType.INVALID_INSTANCE) {
+                Assert.assertNotEquals(this.expectedExecute, argument.getValue());
+            } else {
+                Assert.assertEquals(this.expectedExecute, argument.getValue());
+                Assert.assertEquals(this.tupleStreamId, argument.getValue().getSourceStreamId());
+            }
+
+            if (this.boltExecutorEnum == BasicBoltExecutorEnum.ACK_FAILED) {
                 verify(this.outputCollector).reportError(isA(Throwable.class));
                 verify(this.outputCollector).fail(isA(Tuple.class));
 
@@ -129,12 +242,18 @@ public class BasicBoltExecutorSimpleTests {
             Assert.assertTrue("No exception was expected, but an exception during the set up of the test case has" +
                     " been thrown.", true);
         } else {
-
             ArgumentCaptor<TopologyContext> argument = ArgumentCaptor.forClass(TopologyContext.class);
             verify(this.mockBolt).prepare(isA(Map.class), argument.capture());
+            if (this.componentIdParamType == ParamType.INVALID_INSTANCE)
+                Assert.assertNotEquals("Another component ID", this.expectedPrepareComponent,argument.getValue().getThisComponentId());
+            else Assert.assertEquals("Exact component ID",this.expectedPrepareComponent, argument.getValue().getThisComponentId());
 
-            Assert.assertEquals("Expected component ID", this.componentId, argument.getValue().getThisComponentId());
-            Assert.assertEquals("Expected stream ID", ImmutableSet.of(new GlobalStreamId(this.componentId, this.streamId)), argument.getValue().getThisSources().keySet());
+            if (this.streamIdParamType == ParamType.VALID_INSTANCE && this.componentIdParamType == ParamType.VALID_INSTANCE)
+                Assert.assertEquals("Exact stream ID",ImmutableSet.of(new GlobalStreamId(this.expectedPrepareComponent, this.expectedPrepareStream)),
+                        argument.getValue().getThisSources().keySet());
+            else Assert.assertNotEquals("Another stream ID",
+                    ImmutableSet.of(new GlobalStreamId(this.expectedPrepareComponent, this.expectedPrepareStream)),  argument.getValue().getThisSources().keySet());
+
         }
     }
 
@@ -173,13 +292,12 @@ public class BasicBoltExecutorSimpleTests {
                     " been thrown.", true);
         } else {
 
-            this.executor.declareOutputFields(this.outputFieldsDeclarer);
+            ArgumentCaptor<OutputFieldsDeclarer> argument = ArgumentCaptor.forClass(OutputFieldsDeclarer.class);
+            verify(this.mockBolt).declareOutputFields(argument.capture());
 
-            verify(this.mockBolt, Mockito.times(1)).declareOutputFields(this.outputFieldsDeclarer);
+            if (this.declareParamType == ParamType.INVALID_INSTANCE) Assert.assertNotEquals(this.expectedDeclare, argument.getValue());
+            else Assert.assertEquals(this.expectedDeclare, argument.getValue());
 
         }
     }
-
-
-
 }
