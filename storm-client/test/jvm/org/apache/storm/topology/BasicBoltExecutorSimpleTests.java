@@ -177,7 +177,7 @@ public class BasicBoltExecutorSimpleTests {
                 {
                         // tuple ,             Config
                         new Object[]{ParamType.VALID_INSTANCE, BasicBoltExecutorEnum.NO_ACK_FAILED},
-                        //ComponentId, stream Id
+                                        //ComponentId, stream Id
                         new Object[]{ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE},
                         //Declare outputField
                         new Object[]{ParamType.VALID_INSTANCE},
@@ -186,23 +186,17 @@ public class BasicBoltExecutorSimpleTests {
 
                 {
                         new Object[]{ParamType.INVALID_INSTANCE, BasicBoltExecutorEnum.NO_ACK_FAILED},
-
                         new Object[]{ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE},
-
                         new Object[]{ParamType.INVALID_INSTANCE}
                 },
                 {
                         new Object[]{ParamType.INVALID_INSTANCE, BasicBoltExecutorEnum.ACK_FAILED},
-                        //ComponentId, stream Id
                         new Object[]{ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE},
-                        //Declare outputField
                         new Object[]{ParamType.VALID_INSTANCE}
                 },
                 {
                         new Object[]{ParamType.VALID_INSTANCE, BasicBoltExecutorEnum.ACK_FAILED},
-                        //ComponentId, stream Id
                         new Object[]{ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE},
-                        //Declare outputField
                         new Object[]{ParamType.VALID_INSTANCE}
 
                 }
