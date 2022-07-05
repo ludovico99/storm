@@ -29,7 +29,7 @@ public class SplitSentence extends BaseBasicBolt {
             }
         }
     }
-    
+
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields("word"));

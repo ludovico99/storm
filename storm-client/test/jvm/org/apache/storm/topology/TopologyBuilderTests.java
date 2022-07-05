@@ -212,14 +212,13 @@ public class TopologyBuilderTests {
 
         private IWorkerHook workerHook;
         private boolean expectedWorkerHook;
-        private Utils utils = new Utils();
+        private final Utils utils = new Utils();
 
         private String[] boltsIdNP;
         private IBasicBolt basicBoltNP;
         private IRichBolt richBoltNP;
         private IStatefulBolt<?> statefulBoltNP;
         private IStatefulWindowedBolt<?> statefulWindowedBoltNP;
-        private IStatefulWindowedBolt<?> statefulWindowedBoltPersistentNP;
         private boolean expectedValueBoltsNP;
         private IWindowedBolt windowedBoltNP;
 
@@ -248,7 +247,6 @@ public class TopologyBuilderTests {
             this.statefulBoltNP = utils.statefulBolt(bolt);
             this.windowedBoltNP= utils.windowedBolt(bolt);
             this.statefulWindowedBoltNP = utils.statefulWindowedBolt(bolt);
-            this.statefulWindowedBoltPersistentNP = utils.statefulWindowedBolt(bolt);
 
             switch (bolt) {
                 case VALID_INSTANCE:
@@ -283,7 +281,6 @@ public class TopologyBuilderTests {
                     this.richBoltNP = null;
                     this.statefulBoltNP = null;
                     this.statefulWindowedBoltNP = null;
-                    this.statefulWindowedBoltPersistentNP = null;
                     switch (stringType){
                         case NO_EMPTY_STRING:
                             this.boltsIdNP = new String[]{"bolt1", "bolt2"};
