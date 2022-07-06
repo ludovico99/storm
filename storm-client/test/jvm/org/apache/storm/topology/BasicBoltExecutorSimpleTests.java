@@ -1,6 +1,7 @@
 package org.apache.storm.topology;
 
 
+import org.apache.storm.Config;
 import org.apache.storm.generated.GlobalStreamId;
 import org.apache.storm.generated.Grouping;
 import org.apache.storm.shade.com.google.common.collect.ImmutableSet;
@@ -8,6 +9,7 @@ import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.tuple.Tuple;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,14 +34,14 @@ public class BasicBoltExecutorSimpleTests {
     private Tuple expectedExecute;
     private ParamType tupleParamType;
     private String tupleStreamId;
+    private Tuple mockTuple;
 
     //Prepare
     private String expectedPrepareComponent;
     private String expectedPrepareStream;
-    private String componentId = "bolt - 1";
-    private String streamId = "stream - 1";
     private ParamType componentIdParamType;
     private ParamType streamIdParamType ;
+    private TopologyContext context;
 
     //Declare
     private OutputFieldsDeclarer expectedDeclare;
@@ -91,7 +93,7 @@ public class BasicBoltExecutorSimpleTests {
         this.tupleParamType = tuple;
         this.tupleStreamId = "default";
 
-        Tuple mockTuple = Mockito.mock(Tuple.class);
+        mockTuple = Mockito.mock(Tuple.class);
         when(mockTuple.getSourceStreamId()).thenReturn(this.tupleStreamId);
 
         switch (tuple) {
@@ -112,7 +114,6 @@ public class BasicBoltExecutorSimpleTests {
                 break;
         }
 
-        this.executor.execute(mockTuple);
 
     }
 
@@ -123,18 +124,20 @@ public class BasicBoltExecutorSimpleTests {
 
         try {
 
+            String componentId1 = "bolt - 1";
             switch (componentId){
                 case VALID_INSTANCE:
-                    this.expectedPrepareComponent = this.componentId;
+                    this.expectedPrepareComponent = componentId1;
                     break;
                 case INVALID_INSTANCE:
                     this.expectedPrepareComponent = "another component ID";
                     break;
             }
 
+            String streamId1 = "stream - 1";
             switch (streamId){
                 case VALID_INSTANCE:
-                    this.expectedPrepareStream = this.streamId;
+                    this.expectedPrepareStream = streamId1;
                     break;
                 case INVALID_INSTANCE:
                     this.expectedPrepareStream = "another stream";
@@ -142,17 +145,14 @@ public class BasicBoltExecutorSimpleTests {
             }
 
             this.topoConf = new HashMap<>();
-
-            TopologyContext context = Mockito.mock(TopologyContext.class);
+            context = Mockito.mock(TopologyContext.class);
 
             when(context.getThisTaskId()).thenReturn(1);
-            GlobalStreamId globalStreamId = new GlobalStreamId(this.componentId, this.streamId);
+            GlobalStreamId globalStreamId = new GlobalStreamId(componentId1, streamId1);
             Map<GlobalStreamId, Grouping> thisSources = Collections.singletonMap(globalStreamId, mock(Grouping.class));
             when(context.getThisSources()).thenReturn(thisSources);
             when(context.getComponentTasks(any())).thenReturn(Collections.singletonList(1));
-            when(context.getThisComponentId()).thenReturn(this.componentId);
-
-            this.executor.prepare(topoConf, context, outputCollector);
+            when(context.getThisComponentId()).thenReturn(componentId1);
 
 
         } catch (Exception e) {
@@ -169,6 +169,11 @@ public class BasicBoltExecutorSimpleTests {
 
     }
 
+    @Before
+    public void setUp (){
+        this.executor.prepare(topoConf, context, outputCollector);
+    }
+
 
     @Parameterized.Parameters
     public static Collection<Object[]> getParameters() {
@@ -177,7 +182,7 @@ public class BasicBoltExecutorSimpleTests {
                 {
                         // tuple ,             Config
                         new Object[]{ParamType.VALID_INSTANCE, BasicBoltExecutorEnum.NO_ACK_FAILED},
-                                        //ComponentId, stream Id
+                        //ComponentId, stream Id
                         new Object[]{ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE},
                         //Declare outputField
                         new Object[]{ParamType.VALID_INSTANCE},
@@ -205,15 +210,17 @@ public class BasicBoltExecutorSimpleTests {
 
 
     @Test
-    public void testHandleTuple() {
+    public void testHandleTupleAndAck() {
         if (this.exceptionInConfigPhase) {
             Assert.assertTrue("No exception was expected, but an exception during the set up of the test case has" +
                     " been thrown.", true);
         } else {
 
+            this.executor.execute(mockTuple);
 
             ArgumentCaptor<Tuple> argument = ArgumentCaptor.forClass(Tuple.class);
             verify(this.mockBolt).execute(argument.capture(), isA(BasicOutputCollector.class));
+            verify(this.outputCollector).ack(mockTuple);
 
             if (tupleParamType == ParamType.INVALID_INSTANCE) {
                 Assert.assertNotEquals(this.expectedExecute, argument.getValue());
@@ -221,6 +228,8 @@ public class BasicBoltExecutorSimpleTests {
                 Assert.assertEquals(this.expectedExecute, argument.getValue());
                 Assert.assertEquals(this.tupleStreamId, argument.getValue().getSourceStreamId());
             }
+
+
 
             if (this.boltExecutorEnum == BasicBoltExecutorEnum.ACK_FAILED) {
                 verify(this.outputCollector).reportError(isA(Throwable.class));
@@ -236,6 +245,7 @@ public class BasicBoltExecutorSimpleTests {
             Assert.assertTrue("No exception was expected, but an exception during the set up of the test case has" +
                     " been thrown.", true);
         } else {
+
             ArgumentCaptor<TopologyContext> argument = ArgumentCaptor.forClass(TopologyContext.class);
             verify(this.mockBolt).prepare(isA(Map.class), argument.capture());
             if (this.componentIdParamType == ParamType.INVALID_INSTANCE)
@@ -285,7 +295,6 @@ public class BasicBoltExecutorSimpleTests {
             Assert.assertTrue("No exception was expected, but an exception during the set up of the test case has" +
                     " been thrown.", true);
         } else {
-
             ArgumentCaptor<OutputFieldsDeclarer> argument = ArgumentCaptor.forClass(OutputFieldsDeclarer.class);
             verify(this.mockBolt).declareOutputFields(argument.capture());
 
