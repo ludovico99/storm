@@ -95,18 +95,18 @@ public class BasicBoltExecutorSimpleTests {
 
             return Arrays.asList(new Object[][]{
 
-//                    // tuple ,                OutputCollector                        Config,                  expectedValue
-//                    {ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE,   BasicBoltExecutorEnum.NO_ACK_FAILED, false},
-//
-//                    {ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, BasicBoltExecutorEnum.NO_ACK_FAILED, true},
-//
-//                    {ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE,    BasicBoltExecutorEnum.NO_ACK_FAILED, true},
-//
-//                    {ParamType.NULL_INSTANCE, ParamType.VALID_INSTANCE,    BasicBoltExecutorEnum.NO_ACK_FAILED, false},
-//
-//                    {ParamType.NULL_INSTANCE, ParamType.NULL_INSTANCE,     BasicBoltExecutorEnum.NO_ACK_FAILED, true},
-//
-//                    {ParamType.NULL_INSTANCE, ParamType.INVALID_INSTANCE,  BasicBoltExecutorEnum.NO_ACK_FAILED, true},
+                    // tuple ,                OutputCollector                        Config,                  expectedValue
+                    {ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE,   BasicBoltExecutorEnum.NO_ACK_FAILED, false},
+
+                    {ParamType.VALID_INSTANCE, ParamType.INVALID_INSTANCE, BasicBoltExecutorEnum.NO_ACK_FAILED, true},
+
+                    {ParamType.VALID_INSTANCE, ParamType.NULL_INSTANCE,    BasicBoltExecutorEnum.NO_ACK_FAILED, true},
+
+                    {ParamType.NULL_INSTANCE, ParamType.VALID_INSTANCE,    BasicBoltExecutorEnum.NO_ACK_FAILED, false},
+
+                    {ParamType.NULL_INSTANCE, ParamType.NULL_INSTANCE,     BasicBoltExecutorEnum.NO_ACK_FAILED, true},
+
+                    {ParamType.NULL_INSTANCE, ParamType.INVALID_INSTANCE,  BasicBoltExecutorEnum.NO_ACK_FAILED, true},
 
                     {ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE,   BasicBoltExecutorEnum.ACK_FAILED,    false}
 
