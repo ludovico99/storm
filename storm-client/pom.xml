@@ -346,7 +346,7 @@
               </targetClasses>
               <targetTests>
                 <param>org.apache.storm.topology.TopologyBuilderTests</param>
-				<param>org.apache.storm.topology.BasicBoltExecutorSimpleTests</param>
+				<param>org.apache.storm.topology.BasicBoltExecutorSimpleTests*</param>
               </targetTests>
               <avoidCallsTo>
                 <avoidCallsTo>org.slf4j</avoidCallsTo>
