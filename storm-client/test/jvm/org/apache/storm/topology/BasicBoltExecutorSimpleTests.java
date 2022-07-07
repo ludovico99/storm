@@ -237,15 +237,15 @@ public class BasicBoltExecutorSimpleTests {
             return Arrays.asList(new Object[][]{
 
                     //TopoConf                  TopologyContext         OutputCollector,            expectedValue
-                    {ParamType.VALID_INSTANCE,  ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, false},
+                    {ParamType.VALID_INSTANCE,  ParamType.VALID_INSTANCE,   ParamType.VALID_INSTANCE, false},
 
                     {ParamType.VALID_INSTANCE,  ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, true},
 
-                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE, ParamType.VALID_INSTANCE, false},
+                    {ParamType.INVALID_INSTANCE, ParamType.VALID_INSTANCE,  ParamType.VALID_INSTANCE, false},
 
-                    {ParamType.NULL_INSTANCE,    ParamType.NULL_INSTANCE, ParamType.NULL_INSTANCE, false},
+                    {ParamType.NULL_INSTANCE,    ParamType.NULL_INSTANCE,   ParamType.NULL_INSTANCE, false},
 
-                    {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE, true}
+                    {ParamType.INVALID_INSTANCE, ParamType.INVALID_INSTANCE,ParamType.INVALID_INSTANCE, true}
 
             });
         }
