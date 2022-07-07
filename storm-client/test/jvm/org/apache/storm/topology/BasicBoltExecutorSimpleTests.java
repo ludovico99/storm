@@ -272,11 +272,11 @@ public class BasicBoltExecutorSimpleTests {
                                 argument.getValue().getThisSources().keySet());
                     }
 
-                    Assert.assertFalse("No exception raised", this.expectedExceptionPrepare);
+                    Assert.assertFalse("No exception has raised", this.expectedExceptionPrepare);
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Assert.assertTrue("No exception raised", this.expectedExceptionPrepare);
+                    Assert.assertTrue("Exception has raised", this.expectedExceptionPrepare);
                 }
             }
     }
